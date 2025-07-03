@@ -1,0 +1,455 @@
+{% extends 'base.html' %}
+{% block title %}Laporan Monitoring Tugas Akhir{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        body {
+            font-size: 12px;
+        }
+        .table {
+            font-size: 11px;
+        }
+        .btn {
+            display: none;
+        }
+    }
+    
+    .report-header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 15px;
+    }
+    
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="no-print">
+    <a href="{% url 'adminkampus:dashboard' %}" class="btn btn-outline-secondary mb-3">
+        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+    </a>
+</div>
+
+<div class="report-header">
+    <h2>LAPORAN MONITORING TUGAS AKHIR</h2>
+    <h4>SEKOLAH TINGGI TEKNOLOGI CIPASUNG</h4>
+    <p>Periode: {{ periode_start|date:"d M Y" }}  {{ periode_end|date:"d M Y" }} 2024-2025</p>
+    <p>Tanggal Cetak: {{ tanggal_cetak|date:"d M Y H:i" }}</p>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <h3>Dashboard Laporan</h3>
+    <div>
+        <a href="?export=excel" class="btn btn-success me-2">
+            <i class="fas fa-file-excel"></i> Ekspor Excel
+        </a>
+        <a href="?export=pdf" class="btn btn-danger me-2">
+            <i class="fas fa-file-pdf"></i> Ekspor PDF
+        </a>
+        <button class="btn btn-secondary" onclick="window.print()">
+            <i class="fas fa-print"></i> Cetak
+        </button>
+    </div>
+</div>
+
+<!-- Ringkasan Statistik -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Mahasiswa</h5>
+                <h3>{{ total_mahasiswa }}</h3>
+                <small>Mahasiswa aktif TA</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">TA Selesai</h5>
+                <h3>{{ ta_selesai }}</h3>
+                <small>{{ persentase_selesai }}% dari total</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">TA Berlangsung</h5>
+                <h3>{{ ta_berlangsung }}</h3>
+                <small>{{ persentase_berlangsung }}% dari total</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5 class="card-title">Belum Mulai</h5>
+                <h3>{{ belum_mulai }}</h3>
+                <small>{{ persentase_belum_mulai }}% dari total</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistik Dosen -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Dosen Pembimbing</h5>
+                <h3>{{ total_dosen }}</h3>
+                <small>Dosen aktif membimbing</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Rata-rata Bimbingan</h5>
+                <h3>{{ rata_rata_bimbingan }}</h3>
+                <small>Mahasiswa per dosen</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-dark text-white">
+            <div class="card-body">
+                <h5 class="card-title">Mahasiswa Tanpa Pembimbing</h5>
+                <h3>{{ mahasiswa_tanpa_pembimbing }}</h3>
+                <small>Perlu penugasan</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Progress per Jurusan -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Status Tugas Akhir per Jurusan</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Jurusan</th>
+                        <th>Total Mahasiswa</th>
+                        <th>Proposal</th>
+                        <th>Penelitian</th>
+                        <th>Penulisan</th>
+                        <th>Sidang</th>
+                        <th>Selesai</th>
+                        <th>% Selesai</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in status_per_jurusan %}
+                    <tr>
+                        <td>{{ data.jurusan }}</td>
+                        <td>{{ data.total }}</td>
+                        <td>{{ data.proposal }}</td>
+                        <td>{{ data.penelitian }}</td>
+                        <td>{{ data.penulisan }}</td>
+                        <td>{{ data.sidang }}</td>
+                        <td>{{ data.selesai }}</td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ data.persentase }}%">
+                                    {{ data.persentase }}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Mahasiswa yang Membutuhkan Perhatian -->
+<div class="page-break"></div>
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Mahasiswa yang Membutuhkan Perhatian Khusus</h5>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs" id="alertTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overdue-tab" data-bs-toggle="tab" 
+                        data-bs-target="#overdue" type="button" role="tab">
+                    Terlambat ({{ mahasiswa_terlambat|length }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="no-advisor-tab" data-bs-toggle="tab" 
+                        data-bs-target="#no-advisor" type="button" role="tab">
+                    Tanpa Pembimbing ({{ mahasiswa_tanpa_dosen|length }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="inactive-tab" data-bs-toggle="tab" 
+                        data-bs-target="#inactive" type="button" role="tab">
+                    Tidak Aktif ({{ mahasiswa_tidak_aktif|length }})
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content mt-3" id="alertTabContent">
+            <!-- Mahasiswa Terlambat -->
+            <div class="tab-pane fade show active" id="overdue" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Jurusan</th>
+                                <th>Status</th>
+                                <th>Keterlambatan</th>
+                                <th>Pembimbing</th>
+                                <th>Kontak Terakhir</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mhs in mahasiswa_terlambat %}
+                            <tr>
+                                <td>{{ mhs.nim }}</td>
+                                <td>{{ mhs.nama }}</td>
+                                <td>{{ mhs.jurusan }}</td>
+                                <td>
+                                    <span class="badge bg-warning">{{ mhs.status_ta }}</span>
+                                </td>
+                                <td>{{ mhs.hari_terlambat }} hari</td>
+                                <td>{{ mhs.dosen_pembimbing.nama|default:"Belum ada" }}</td>
+                                <td>{{ mhs.kontak_terakhir|date:"d M Y"|default:"Tidak ada" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">Tidak ada mahasiswa yang terlambat</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Mahasiswa Tanpa Pembimbing -->
+            <div class="tab-pane fade" id="no-advisor" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-danger">
+                            <tr>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Jurusan</th>
+                                <th>Angkatan</th>
+                                <th>IPK</th>
+                                <th>SKS Lulus</th>
+                                <th>Topik TA</th>
+                                <th>Tanggal Daftar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mhs in mahasiswa_tanpa_dosen %}
+                            <tr>
+                                <td>{{ mhs.nim }}</td>
+                                <td>{{ mhs.nama }}</td>
+                                <td>{{ mhs.jurusan }}</td>
+                                <td>{{ mhs.angkatan }}</td>
+                                <td>{{ mhs.ipk }}</td>
+                                <td>{{ mhs.sks_lulus }}</td>
+                                <td>{{ mhs.topik_ta|truncatechars:30 }}</td>
+                                <td>{{ mhs.tanggal_daftar|date:"d M Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center">Semua mahasiswa sudah memiliki pembimbing</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Mahasiswa Tidak Aktif -->
+            <div class="tab-pane fade" id="inactive" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Jurusan</th>
+                                <th>Status</th>
+                                <th>Pembimbing</th>
+                                <th>Aktivitas Terakhir</th>
+                                <th>Durasi Tidak Aktif</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mhs in mahasiswa_tidak_aktif %}
+                            <tr>
+                                <td>{{ mhs.nim }}</td>
+                                <td>{{ mhs.nama }}</td>
+                                <td>{{ mhs.jurusan }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ mhs.status_ta }}</span>
+                                </td>
+                                <td>{{ mhs.dosen_pembimbing.nama|default:"Belum ada" }}</td>
+                                <td>{{ mhs.aktivitas_terakhir|date:"d M Y" }}</td>
+                                <td>{{ mhs.durasi_tidak_aktif }} hari</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">Semua mahasiswa aktif</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Beban Kerja Dosen -->
+<div class="page-break"></div>
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Beban Kerja Dosen Pembimbing</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nama Dosen</th>
+                        <th>NIDN</th>
+                        <th>Jurusan</th>
+                        <th>Jumlah Bimbingan</th>
+                        <th>Selesai</th>
+                        <th>Berlangsung</th>
+                        <th>% Keberhasilan</th>
+                        <th>Status Beban</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dosen in beban_dosen %}
+                    <tr>
+                        <td>{{ dosen.nama }}</td>
+                        <td>{{ dosen.nidn }}</td>
+                        <td>{{ dosen.jurusan }}</td>
+                        <td>{{ dosen.total_bimbingan }}</td>
+                        <td>{{ dosen.selesai }}</td>
+                        <td>{{ dosen.berlangsung }}</td>
+                        <td>{{ dosen.persentase_keberhasilan }}%</td>
+                        <td>
+                            {% if dosen.total_bimbingan > 8 %}
+                                <span class="badge bg-danger">Overload</span>
+                            {% elif dosen.total_bimbingan > 5 %}
+                                <span class="badge bg-warning">Tinggi</span>
+                            {% elif dosen.total_bimbingan > 0 %}
+                                <span class="badge bg-success">Normal</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Tidak Ada</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Trend Penyelesaian TA per Bulan -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Trend Penyelesaian Tugas Akhir (12 Bulan Terakhir)</h5>
+    </div>
+    <div class="card-body">
+        <canvas id="trendChart" width="400" height="100"></canvas>
+    </div>
+</div>
+
+<!-- Footer Laporan -->
+<div class="row mt-5 pt-4 border-top">
+    <div class="col-md-6">
+        <p><strong>Catatan:</strong></p>
+        <ul>
+            <li>Data diambil dari sistem per {{ last_update|date:"d M Y H:i" }}</li>
+            <li>Mahasiswa terlambat: tidak ada aktivitas >30 hari</li>
+            <li>Beban normal dosen: 3-5 mahasiswa</li>
+            <li>Target penyelesaian: 24 bulan</li>
+        </ul>
+    </div>
+    <div class="col-md-6 text-end">
+        <p><strong>Disetujui oleh:</strong></p>
+        <br><br>
+        <p>____________________<br>
+        Kepala Bagian Akademik<br>
+        NIP: ________________</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Chart untuk trend penyelesaian
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    const trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ trend_labels|safe }},
+            datasets: [{
+                label: 'Tugas Akhir Selesai',
+                data: {{ trend_data|safe }},
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SIMONTA{% endblock %}</title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% load static %}
+    <link rel="icon" type="image/png" href="{% static 'img/iconstudent.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #64748b;
+            --accent-color: #0ea5e9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Modern Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem 0;
+            border: none;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--white) !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+            color: #e0e7ff !important;
+        }
+
+        .navbar-brand::before {
+            content: '';
+            font-size: 1.75rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover {
+            color: var(--white) !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        /* Enhanced Container */
+        .container {
+            max-width: 1200px;
+            
+        }
+
+        main.container {
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Modern Alert Messages */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: currentColor;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            color: #065f46;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            color: #991b1b;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+            color: #92400e;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(14, 165, 233, 0.05));
+            color: #1e40af;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .btn-close {
+            filter: none;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Modern DataTable Enhancements */
+        .table-responsive {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .table {
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: var(--white);
+            font-weight: 600;
+            padding: 1.25rem 1rem;
+            border: none;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+        }
+
+        .table thead th:first-child {
+            border-top-left-radius: 16px;
+        }
+
+        .table thead th:last-child {
+            border-top-right-radius: 16px;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover td {
+            background: #f1f5f9;
+            transform: scale(1.01);
+        }
+
+        .table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 16px;
+        }
+
+        .table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 16px;
+        }
+
+        /* DataTables Custom Styling */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            margin: 1rem;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            margin: 0 0.25rem;
+            background: var(--light-bg);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* Card Styles for Content Areas */
+        .content-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    padding: 2rem;
+    margin: 2rem auto;
+    width: 120%;
+    position: relative;
+    left: -10%; /* Geser ke kiri agar terpusat di layar */
+    overflow: hidden;
+}
+
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        /* Modern Form Styles */
+        .form-control {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.925rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            main.container {
+                margin-top: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .table thead th,
+            .table tbody td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Smooth Transitions */
+        * {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+    
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:home' %}">
+                <i class="fas fa-graduation-cap"></i> SIMONTA
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <span class="nav-link">
+                            <i class="fas fa-user-circle me-2"></i>{{ user.username }}
+                        </span>
+                        <a href="{% url 'users:login' %}" 
+                        class="nav-link" onclick="logoutConfirm(event)">
+                        <i class="fas fa-sign-out-alt me-2"></i>Keluar
+                     </a>
+                     
+                    {% else %}
+                        <a class="nav-link" href="{% url 'users:login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i>Masuk
+                        </a>
+                        <a class="nav-link" href="{% url 'users:register' %}">
+                            <i class="fas fa-user-plus me-2"></i>Daftar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle me-2"></i>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                    {% elif message.tags == 'info' %}
+                        <i class="fas fa-info-circle me-2"></i>
+                    {% endif %}
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+    <!-- Google Fonts for Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Bootstrap 5 JavaScript Bundle (includes Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"> </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+
+function logoutConfirm(event) {
+    event.preventDefault(); // Cegah link langsung terbuka
+
+    Swal.fire({
+      title: 'Konfirmasi Keluar',
+      text: 'Apakah Anda yakin ingin keluar?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0d6efd',  // biru
+      cancelButtonColor: '#343a40',  // hitam gelap
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal',
+      background: '#fff',
+      color: '#000'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Arahkan ke URL logout Django
+        window.location.href = "{% url 'users:login' %}";
+      }
+    });
+  }
+        $(document).ready(function () {
+            // Initialize DataTables with modern configuration
+            $('.table').DataTable({
+                responsive: true,
+                pageLength:10,
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data per halaman",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    },
+                    emptyTable: "Tidak ada data tersedia",
+                    zeroRecords: "Tidak ditemukan data yang sesuai"
+                },
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                     '<"row"<"col-sm-12"tr>>' +
+                     '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            });
+
+            // Smooth scroll for navbar links
+            $('a[href^="#"]').on('click', function(event) {
+                var target = $(this.getAttribute('href'));
+                if( target.length ) {
+                    event.preventDefault();
+                    $('html, body').stop().animate({
+                        scrollTop: target.offset().top - 100
+                    }, 1000);
+                }
+            });
+
+            // Add loading state to buttons on form submit
+            $('form').on('submit', function() {
+                $(this).find('button[type="submit"]').each(function() {
+                    const $btn = $(this);
+                    const originalText = $btn.html();
+                    $btn.html('<span class="loading"></span> ' + originalText).prop('disabled', true);
+                });
+            });
+
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+
+            // Add smooth transitions to table rows
+            $('.table tbody tr').hover(
+                function() {
+                    $(this).addClass('table-hover-effect');
+                },
+                function() {
+                    $(this).removeClass('table-hover-effect');
+                }
+            );
+        });
+
+        // Add scroll effect to navbar
+        $(window).scroll(function() {
+            if ($(window).scrollTop() > 50) {
+                $('.navbar').addClass('scrolled');
+            } else {
+                $('.navbar').removeClass('scrolled');
+            }
+        });
+    </script>
+    
+    {% bootstrap_javascript %}
+    <script src="{% static 'js/custom.js' %}"></script>
+</body>
+</html>

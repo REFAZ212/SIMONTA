@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Persetujuan Pengajuan TA{% endblock %}
+{% block content %}
+<h3>Pengajuan oleh: {{ pengajuan.mahasiswa.nama }}</h3>
+<p><strong>Judul:</strong> {{ pengajuan.judul }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="catatan">Catatan Admin</label>
+        <textarea name="catatan" class="form-control" rows="3"></textarea>
+    </div>
+    <button type="submit" name="action" value="approve" class="btn btn-success">Setujui</button>
+    <button type="submit" name="action" value="reject" class="btn btn-danger">Tolak</button>
+</form>
+{% endblock %}

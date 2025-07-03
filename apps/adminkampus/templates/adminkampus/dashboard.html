@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin Kampus - Sistem Monitoring TA</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --info-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --hover-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Top Navigation */
+        .top-navbar {
+            background: var(--primary-color);
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .top-navbar .navbar-brand {
+            color: white !important;
+            
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white !important;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            top: 78px;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--header-height));
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            z-index: 1020;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            background-color: #2152cf;
+            color: white;
+            text-align: center;
+        }
+
+        .sidebar-header h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            margin: 0.5rem 0 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: #495057;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .menu-item:hover {
+            background: #f8f9fa;
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background-color: #2152cf;
+            color: white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 2rem;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            top: 1px;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #2152cf;
+        }
+
+        .dashboard-header h2 {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dashboard-header p {
+            color: #7f8c8d;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Statistics Cards */
+        .stat-card {
+            top: 1px;
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            height: 150px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .stat-card.primary {
+            background-color: #00bf33;
+        }
+
+        .stat-card.success {
+            background-color: #ff0000;
+        }
+
+        .stat-card.warning {
+            background-color: #dce000;
+        }
+
+        .stat-card.info {
+            background-color: #00f2ff;
+        }
+
+        .stat-card-body {
+            padding: 2rem;
+            text-align: center;
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            
+        }
+
+        .stat-card.info .stat-card-body {
+            color: #2c3e50;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: -1rem;
+            opacity: 0.9;
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            margin-top: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            margin-bottom: 2px ;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Quick Actions Grid */
+
+        .quick-actions {
+            top: 1px;
+
+        }
+        .quick-actions {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            position: relative;
+           
+        }
+
+        .quick-actions h5 {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background-color: #2152cf;
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .action-btn i {
+            font-size: 2rem;
+        }
+
+        /* Mobile Responsiveness */
+        .mobile-toggle {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .mobile-toggle {
+                display: block;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.2rem;
+                padding: 0.5rem;
+            }
+
+            .stat-card {
+                height: 150px;
+                margin-bottom: 1rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .stat-icon {
+                font-size: 2rem;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            top: 60%;
+            right: 20%;
+            animation-delay: 2s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+          /* Modern Navbar */
+          .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            box-shadow: var(--shadow-lg);
+            background-color: #2152cf;
+            padding: 1rem 0;
+            border: none;
+            position: fixed;
+            width: 1550px;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--white) !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+            color: #e0e7ff !important;
+        }
+
+        .navbar-brand::before {
+            content: '';
+            font-size: 1.75rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover {
+            color: var(--white) !important;
+            background: rgba(246, 246, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:home' %}">
+                <span style="color: white;">
+                    <i class="fas fa-graduation-cap"></i> SIMONTA
+                  </span>
+                  
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <span class="nav-link">
+                            <i class="fas fa-user-circle me-2"></i>{{ user.username }}
+                        </span>
+                        <a href="{% url 'users:login' %}" 
+                        class="nav-link" onclick="logoutConfirm(event)">
+                        <i class="fas fa-sign-out-alt me-2"></i>Keluar
+                     </a>
+                     
+                    {% else %}
+                        <a class="nav-link" href="{% url 'users:login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i>Masuk
+                        </a>
+                        <a class="nav-link" href="{% url 'users:register' %}">
+                            <i class="fas fa-user-plus me-2"></i>Daftar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h5><i class="fas fa-university"></i> Admin Panel</h5>
+            <p>Dashboard Kampus</p>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item active" onclick="showContent('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+            <a href="{% url 'adminkampus:manage_mahasiswa' %}" class="menu-item">
+                <i class="fas fa-user-graduate"></i>
+                Kelola Mahasiswa
+            </a>
+            <a href="{% url 'adminkampus:manage_dosen' %}" class="menu-item">
+                <i class="fas fa-chalkboard-teacher"></i>
+                Kelola Dosen
+            </a>
+            <a href="{% url 'adminkampus:pengajuan_ta_list' %}" class="menu-item">
+                <i class="fas fa-file-alt"></i>
+                Daftar Pengajuan
+            </a>
+            <a href="{% url 'adminkampus:manage_jadwal_penting' %}" class="menu-item" onclick="showContent('jadwal')">
+                <i class="fas fa-calendar-alt"></i>
+                Kelola Jadwal Penting
+            </a>
+            <a href="{% url 'adminkampus:pembagian_dosen' %}" class="menu-item" onclick="showContent('pembagian')">
+                <i class="fas fa-users-cog"></i>
+                Pembagian Dosen
+            </a>
+            <a href="{% url 'adminkampus:laporan' %}" class="menu-item" onclick="showContent('laporan')">
+                <i class="fas fa-chart-bar"></i>
+                Laporan
+            </a>
+            <a href="{% url 'adminkampus:pengaturan' %}" class="menu-item" onclick="showContent('pengaturan')">
+                <i class="fas fa-cog"></i>
+                Pengaturan
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h2>
+                <i class="fas fa-tachometer-alt text-primary"></i>
+                Dashboard Admin Kampus
+            </h2>
+            <p>Sistem Monitoring Tugas Akhir - Kelola data mahasiswa, dosen, dan pengajuan dengan mudah</p>
+            <div class="floating-elements">
+                <div class="floating-circle"></div>
+                <div class="floating-circle"></div>
+                <div class="floating-circle"></div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card stat-card primary">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h5 class="stat-title">Total Mahasiswa</h5>
+                        <h2 class="stat-number pulse">{{ total_mahasiswa|default:"0" }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card stat-card success">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h5 class="stat-title">Total Dosen</h5>
+                        <h2 class="stat-number pulse">{{ total_dosen|default:"0" }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card stat-card warning">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h5 class="stat-title">Pengajuan Pending</h5>
+                        <h2 class="stat-number pulse">{{ pengajuan_pending|default:"0" }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card stat-card info">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h5 class="stat-title">TA Selesai</h5>
+                        <h2 class="stat-number pulse">{{ ta_selesai|default:"0" }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h5>
+                <i class="fas fa-bolt text-primary"></i>
+                Quick Actions
+            </h5>
+            <div class="action-grid">
+                <a href="{% url 'adminkampus:manage_mahasiswa' %}" class="action-btn">
+                    <i class="fas fa-users"></i>
+                    <span>Kelola Mahasiswa</span>
+                </a>
+                <a href="{% url 'adminkampus:manage_dosen' %}" class="action-btn">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Kelola Dosen</span>
+                </a>
+                <a href="{% url 'adminkampus:pengajuan_ta_list' %}" class="action-btn">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Daftar Pengajuan</span>
+                </a>
+                <a href="{% url 'adminkampus:manage_jadwal_penting' %}" class="action-btn" onclick="showAlert('Kelola Jadwal')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Kelola Jadwal Penting</span>
+                </a>
+                <a href="{% url 'adminkampus:pembagian_dosen' %}" class="action-btn" onclick="showAlert('Pembagian Dosen')">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Pembagian Dosen</span>
+                </a>
+                <a href="{% url 'adminkampus:laporan' %}" class="action-btn" onclick="showAlert('Laporan')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Laporan</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+
+  function logoutConfirm(event) {
+    event.preventDefault(); // Cegah link langsung terbuka
+
+    Swal.fire({
+      title: 'Konfirmasi Keluar',
+      text: 'Apakah Anda yakin ingin keluar?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0d6efd',  // biru
+      cancelButtonColor: '#343a40',  // hitam gelap
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal',
+      background: '#fff',
+      color: '#000'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Arahkan ke URL logout Django
+        window.location.href = "{% url 'users:login' %}";
+      }
+    });
+  }
+
+
+        // Toggle sidebar for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Menu navigation
+        function showContent(section) {
+            // Remove active class from all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            event.target.classList.add('active');
+            
+            // Show alert for demo purposes
+            showAlert(`Navigating to ${section.charAt(0).toUpperCase() + section.slice(1)}`);
+        }
+
+        // Show alert function
+        //function showAlert(message) {
+          //  alert(`Demo: ${message} clicked!`);
+       // }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !toggle.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Add hover effects and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const statCards = document.querySelectorAll('.stat-card');
+            
+            statCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Animate numbers on page load
+            const numbers = document.querySelectorAll('.stat-number');
+            numbers.forEach(number => {
+                const finalValue = parseInt(number.textContent);
+                let currentValue = 0;
+                const increment = finalValue / 50;
+                
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= finalValue) {
+                        number.textContent = finalValue;
+                        clearInterval(timer);
+                    } else {
+                        number.textContent = Math.floor(currentValue);
+                    }
+                }, 30);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>{{ judul }}</h3>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Simpan</button>
+  <a href="{% url 'adminkampus:manage_jadwal_penting' %}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}

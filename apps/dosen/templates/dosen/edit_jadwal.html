@@ -1,0 +1,11 @@
+<!-- apps/dosen/templates/dosen/edit_jadwal.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Edit Jadwal Bimbingan</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Simpan</button>
+  </form>
+{% endblock %}

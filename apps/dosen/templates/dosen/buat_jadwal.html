@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buat Jadwal Bimbingan - Sistem Bimbingan{% endblock %}
+{% block page_title %}Buat Jadwal Bimbingan{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{% url 'dosen:buat_jadwal' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <!-- Hari -->
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.hari.id_for_label }}" class="form-label">{{ form.hari.label }}</label>
+                            {{ form.hari }}
+                            {% if form.hari.errors %}
+                                <div class="text-danger">{{ form.hari.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Jam Mulai -->
+                        <div class="col-md-3 mb-3">
+                            <label for="{{ form.jam_mulai.id_for_label }}" class="form-label">{{ form.jam_mulai.label }}</label>
+                            {{ form.jam_mulai }}
+                            {% if form.jam_mulai.errors %}
+                                <div class="text-danger">{{ form.jam_mulai.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Jam Selesai -->
+                        <div class="col-md-3 mb-3">
+                            <label for="{{ form.jam_selesai.id_for_label }}" class="form-label">{{ form.jam_selesai.label }}</label>
+                            {{ form.jam_selesai }}
+                            {% if form.jam_selesai.errors %}
+                                <div class="text-danger">{{ form.jam_selesai.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Tanggal -->
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.tanggal.id_for_label }}" class="form-label">{{ form.tanggal.label }}</label>
+                            {{ form.tanggal }}
+                            <small class="form-text text-muted">{{ form.tanggal.help_text }}</small>
+                            {% if form.tanggal.errors %}
+                                <div class="text-danger">{{ form.tanggal.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Kuota -->
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.kuota.id_for_label }}" class="form-label">{{ form.kuota.label }}</label>
+                            {{ form.kuota }}
+                            <small class="form-text text-muted">{{ form.kuota.help_text }}</small>
+                            {% if form.kuota.errors %}
+                                <div class="text-danger">{{ form.kuota.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Ruangan -->
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.ruangan.id_for_label }}" class="form-label">{{ form.ruangan.label }}</label>
+                            {{ form.ruangan }}
+                            {% if form.ruangan.errors %}
+                                <div class="text-danger">{{ form.ruangan.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Keterangan -->
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.keterangan.id_for_label }}" class="form-label">{{ form.keterangan.label }}</label>
+                            {{ form.keterangan }}
+                            {% if form.keterangan.errors %}
+                                <div class="text-danger">{{ form.keterangan.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Is Recurring -->
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                {{ form.is_recurring }}
+                                <label for="{{ form.is_recurring.id_for_label }}" class="form-check-label">{{ form.is_recurring.label }}</label>
+                                <small class="form-text text-muted">{{ form.is_recurring.help_text }}</small>
+                                {% if form.is_recurring.errors %}
+                                    <div class="text-danger">{{ form.is_recurring.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Upload Requirements Section -->
+                        <div class="col-md-12 mb-4">
+                            <hr>
+                            <h5 class="mb-3">
+                                <i class="fas fa-upload me-2"></i>Persyaratan Upload untuk Mahasiswa
+                            </h5>
+                            
+                            <!-- Require File Upload -->
+                            <div class="col-md-12 mb-3">
+                                <div class="form-check">
+                                    {% if form.require_file_upload %}
+                                        {{ form.require_file_upload }}
+                                        <label for="{{ form.require_file_upload.id_for_label }}" class="form-check-label">
+                                            {{ form.require_file_upload.label }}
+                                        </label>
+                                    {% else %}
+                                        <!-- Fallback jika field belum ada di form -->
+                                        <input type="checkbox" class="form-check-input" id="id_require_file_upload" name="require_file_upload">
+                                        <label for="id_require_file_upload" class="form-check-label">
+                                            Wajib Upload File
+                                        </label>
+                                    {% endif %}
+                                    <small class="form-text text-muted">
+                                        {% if form.require_file_upload.help_text %}
+                                            {{ form.require_file_upload.help_text }}
+                                        {% else %}
+                                            Centang jika mahasiswa wajib mengupload file untuk mengikuti bimbingan ini
+                                        {% endif %}
+                                    </small>
+                                    {% if form.require_file_upload.errors %}
+                                        <div class="text-danger">{{ form.require_file_upload.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- File Types Allowed -->
+                            <div class="col-md-6 mb-3" id="file-requirements" style="display: none;">
+                                <label for="id_allowed_file_types" class="form-label">
+                                    {% if form.allowed_file_types.label %}{{ form.allowed_file_types.label }}{% else %}Jenis File yang Diizinkan{% endif %}
+                                </label>
+                                {% if form.allowed_file_types %}
+                                    {{ form.allowed_file_types }}
+                                {% else %}
+                                    <!-- Fallback jika field belum ada di form -->
+                                    <select multiple class="form-control" id="id_allowed_file_types" name="allowed_file_types">
+                                        <option value="pdf">PDF</option>
+                                        <option value="doc">Word Document</option>
+                                        <option value="docx">Word Document (docx)</option>
+                                        <option value="ppt">PowerPoint</option>
+                                        <option value="pptx">PowerPoint (pptx)</option>
+                                        <option value="jpg">JPEG Image</option>
+                                        <option value="png">PNG Image</option>
+                                        <option value="zip">ZIP Archive</option>
+                                    </select>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    {% if form.allowed_file_types.help_text %}
+                                        {{ form.allowed_file_types.help_text }}
+                                    {% else %}
+                                        Pilih jenis file yang diizinkan untuk diupload (Ctrl+Click untuk memilih multiple)
+                                    {% endif %}
+                                </small>
+                                {% if form.allowed_file_types.errors %}
+                                    <div class="text-danger">{{ form.allowed_file_types.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Max File Size -->
+                            <div class="col-md-6 mb-3" id="file-size-limit" style="display: none;">
+                                <label for="id_max_file_size" class="form-label">
+                                    {% if form.max_file_size.label %}{{ form.max_file_size.label }}{% else %}Ukuran Maksimal File (MB){% endif %}
+                                </label>
+                                {% if form.max_file_size %}
+                                    {{ form.max_file_size }}
+                                {% else %}
+                                    <!-- Fallback jika field belum ada di form -->
+                                    <input type="number" class="form-control" id="id_max_file_size" name="max_file_size" min="1" max="100" placeholder="10">
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    {% if form.max_file_size.help_text %}
+                                        {{ form.max_file_size.help_text }}
+                                    {% else %}
+                                        Ukuran maksimal file dalam MB (kosongkan untuk menggunakan default sistem)
+                                    {% endif %}
+                                </small>
+                                {% if form.max_file_size.errors %}
+                                    <div class="text-danger">{{ form.max_file_size.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Upload Instructions -->
+                            <div class="col-md-12 mb-3" id="upload-instructions" style="display: none;">
+                                <label for="id_upload_instructions" class="form-label">
+                                    {% if form.upload_instructions.label %}{{ form.upload_instructions.label }}{% else %}Instruksi Upload{% endif %}
+                                </label>
+                                {% if form.upload_instructions %}
+                                    {{ form.upload_instructions }}
+                                {% else %}
+                                    <!-- Fallback jika field belum ada di form -->
+                                    <textarea class="form-control" id="id_upload_instructions" name="upload_instructions" rows="3" placeholder="Berikan instruksi khusus untuk mahasiswa..."></textarea>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    {% if form.upload_instructions.help_text %}
+                                        {{ form.upload_instructions.help_text }}
+                                    {% else %}
+                                        Berikan instruksi khusus untuk mahasiswa terkait file yang harus diupload
+                                    {% endif %}
+                                </small>
+                                {% if form.upload_instructions.errors %}
+                                    <div class="text-danger">{{ form.upload_instructions.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Upload Deadline -->
+                            <div class="col-md-6 mb-3" id="upload-deadline" style="display: none;">
+                                <label for="id_upload_deadline" class="form-label">
+                                    {% if form.upload_deadline.label %}{{ form.upload_deadline.label }}{% else %}Batas Waktu Upload{% endif %}
+                                </label>
+                                {% if form.upload_deadline %}
+                                    {{ form.upload_deadline }}
+                                {% else %}
+                                    <!-- Fallback jika field belum ada di form -->
+                                    <input type="datetime-local" class="form-control" id="id_upload_deadline" name="upload_deadline">
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    {% if form.upload_deadline.help_text %}
+                                        {{ form.upload_deadline.help_text }}
+                                    {% else %}
+                                        Batas waktu mahasiswa untuk mengupload file (opsional)
+                                    {% endif %}
+                                </small>
+                                {% if form.upload_deadline.errors %}
+                                    <div class="text-danger">{{ form.upload_deadline.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Non-field errors -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tombol Submit dan Cancel -->
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Simpan Jadwal
+                        </button>
+                        <a href="{% url 'dosen:dashboard' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Batal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cari checkbox berdasarkan name attribute atau id yang pasti ada
+    const requireUploadCheckbox = document.querySelector('input[name="require_file_upload"]') || 
+                                  document.getElementById('id_require_file_upload');
+    
+    const fileRequirements = document.getElementById('file-requirements');
+    const fileSizeLimit = document.getElementById('file-size-limit');
+    const uploadInstructions = document.getElementById('upload-instructions');
+    const uploadDeadline = document.getElementById('upload-deadline');
+
+    function toggleUploadOptions() {
+        if (requireUploadCheckbox && requireUploadCheckbox.checked) {
+            if (fileRequirements) fileRequirements.style.display = 'block';
+            if (fileSizeLimit) fileSizeLimit.style.display = 'block';
+            if (uploadInstructions) uploadInstructions.style.display = 'block';
+            if (uploadDeadline) uploadDeadline.style.display = 'block';
+        } else {
+            if (fileRequirements) fileRequirements.style.display = 'none';
+            if (fileSizeLimit) fileSizeLimit.style.display = 'none';
+            if (uploadInstructions) uploadInstructions.style.display = 'none';
+            if (uploadDeadline) uploadDeadline.style.display = 'none';
+        }
+    }
+
+    // Initial check
+    if (requireUploadCheckbox) {
+        toggleUploadOptions();
+        // Listen for changes
+        requireUploadCheckbox.addEventListener('change', toggleUploadOptions);
+    } else {
+        console.log('Checkbox require_file_upload tidak ditemukan');
+    }
+});
+</script>
+
+{% endblock %}

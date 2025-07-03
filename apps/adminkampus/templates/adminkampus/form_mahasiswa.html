@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Admin Kampus - Form Management{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">
+           
+        </h2>
+    </div>
+</div>
+
+<!-- Form Mahasiswa -->
+<div class="row mb-5">
+    <div class="col-md-12">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-graduate"></i> 
+                    <span id="form-title">Tambah Mahasiswa</span>
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Form akan mengirim ke URL yang sesuai berdasarkan mode -->
+                <form method="post" id="mahasiswa-form" action="{% url 'adminkampus:tambah_mahasiswa' %}">
+                    {% csrf_token %}
+                    
+                    <!-- Hidden field untuk menyimpan ID mahasiswa saat edit -->
+                    <input type="hidden" id="mahasiswa_id" name="mahasiswa_id" value="">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" maxlength="150" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password">
+                                <div class="form-text" id="password-help">
+                                    Masukkan password untuk akun mahasiswa
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="nim" class="form-label">NIM</label>
+                                <input type="text" class="form-control" id="nim" name="nim" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="nama" class="form-label">Nama</label>
+                                <input type="text" class="form-control" id="nama" name="nama" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="jurusan" class="form-label">Jurusan</label>
+                                <input type="text" class="form-control" id="jurusan" name="jurusan" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="angkatan" class="form-label">Angkatan</label>
+                                <input type="number" class="form-control" id="angkatan" name="angkatan" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="ipk" class="form-label">IPK</label>
+                                <input type="number" class="form-control" id="ipk" name="ipk" step="0.01" min="0" max="4">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="sks_lulus" class="form-label">SKS Lulus</label>
+                                <input type="number" class="form-control" id="sks_lulus" name="sks_lulus">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="dosen_pembimbing" class="form-label">Dosen Pembimbing</label>
+                                <select class="form-control" id="dosen_pembimbing" name="dosen_pembimbing">
+                                    <option value="">-- Pilih Dosen --</option>
+                                    {% for dosen in dosen_list %}
+                                        <option value="{{ dosen.id }}">{{ dosen.nama }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{% url 'adminkampus:manage_mahasiswa' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Batal
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submit-btn">
+                            <i class="fas fa-save"></i> <span id="submit-text">Simpan Mahasiswa</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Custom CSS untuk styling tambahan -->
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    transform: translateY(-1px);
+}
+
+.btn {
+    border-radius: 10px;
+    position: relative;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+h2 {
+    color: #495057;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.edit-mode {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('mahasiswa-form');
+    const formTitle = document.getElementById('form-title');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    const passwordHelp = document.getElementById('password-help');
+    const passwordField = document.getElementById('password');
+    const mahasiswaIdField = document.getElementById('mahasiswa_id');
+    const resetBtn = document.getElementById('reset-form');
+    
+    let isEditMode = false;
+    
+    // Function untuk reset form ke mode tambah
+    function resetToAddMode() {
+        isEditMode = false;
+        form.action = "{% url 'adminkampus:tambah_mahasiswa' %}";
+        formTitle.textContent = 'Tambah Mahasiswa';
+        submitText.textContent = 'Simpan Mahasiswa';
+        passwordHelp.textContent = 'Masukkan password untuk akun mahasiswa';
+        passwordField.required = true;
+        mahasiswaIdField.value = '';
+        
+        // Reset semua field
+        form.reset();
+        
+        // Hapus class edit-mode
+        document.querySelector('.card').classList.remove('edit-mode');
+        
+        // Scroll ke form
+        document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Function untuk switch ke mode edit
+    function switchToEditMode(data) {
+        isEditMode = true;
+        form.action = "{% url 'adminkampus:tambah_mahasiswa' %}"; // Tetap menggunakan URL yang sama
+        formTitle.textContent = 'Edit Mahasiswa';
+        submitText.textContent = 'Update Mahasiswa';
+        passwordHelp.textContent = 'Kosongkan jika tidak ingin mengubah password';
+        passwordField.required = false;
+        
+        // Set data ke form
+        mahasiswaIdField.value = data.id;
+        document.getElementById('username').value = data.username;
+        document.getElementById('email').value = data.email;
+        document.getElementById('nim').value = data.nim;
+        document.getElementById('nama').value = data.nama;
+        document.getElementById('jurusan').value = data.jurusan;
+        document.getElementById('angkatan').value = data.angkatan;
+        document.getElementById('ipk').value = data.ipk;
+        document.getElementById('sks_lulus').value = data.sks;
+        document.getElementById('password').value = '';
+        
+        // Set dosen pembimbing
+        const dosenSelect = document.getElementById('dosen_pembimbing');
+        dosenSelect.value = data.dosen;
+        
+        // Tambah class edit-mode
+        document.querySelector('.card').classList.add('edit-mode');
+        
+        // Scroll ke form
+        document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Event listener untuk tombol edit
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const data = {
+                id: this.dataset.id,
+                username: this.dataset.username,
+                email: this.dataset.email,
+                nim: this.dataset.nim,
+                nama: this.dataset.nama,
+                jurusan: this.dataset.jurusan,
+                angkatan: this.dataset.angkatan,
+                ipk: this.dataset.ipk,
+                sks: this.dataset.sks,
+                dosen: this.dataset.dosen
+            };
+            switchToEditMode(data);
+        });
+    });
+    
+    // Event listener untuk tombol reset
+    resetBtn.addEventListener('click', function() {
+        if (confirm('Apakah Anda yakin ingin reset form?')) {
+            resetToAddMode();
+        }
+    });
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const password = passwordField.value;
+        const nama = document.getElementById('nama').value;
+        
+        // Validasi password untuk form tambah
+        if (!isEditMode && !password) {
+            e.preventDefault();
+            alert('Password harus diisi untuk mahasiswa baru');
+            return false;
+        }
+        
+        // Konfirmasi sebelum submit
+        const action = isEditMode ? 'mengupdate' : 'menambah';
+        
+        if (!confirm(`Apakah Anda yakin ingin ${action} data mahasiswa ${nama}?`)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

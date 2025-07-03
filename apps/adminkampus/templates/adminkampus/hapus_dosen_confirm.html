@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Hapus Dosen - {{ dosen.nama }}{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>Konfirmasi Hapus Dosen</h2>
+    
+    <p>Apakah Anda yakin ingin menghapus dosen berikut?</p>
+    
+    <div class="form-row">
+        <strong>Nama:</strong> {{ dosen.nama }}<br>
+        <strong>NIP:</strong> {{ dosen.nip }}<br>
+        <strong>Email:</strong> {{ dosen.email }}
+    </div>
+    
+    <form method="post" style="margin-top: 20px;">
+        {% csrf_token %}
+        <input type="submit" value="Ya, Hapus" class="default" style="background-color: #dc3545; color: white;">
+        <a href="{% url 'admin:adminkampus_dosen_changelist' %}" class="button">Batal</a>
+    </form>
+</div>
+{% endblock %}

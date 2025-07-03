@@ -1,0 +1,612 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Daftar Pengajuan TA - Admin Review{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{% url 'adminkampus:dashboard' %}" class="btn btn-outline-secondary mb-2">
+            <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+        </a>
+        <h2 class="mb-0">
+            <i class="fas fa-graduation-cap text-primary"></i> Review Pengajuan Tugas Akhir
+        </h2>
+        <p class="text-muted mb-0">Kelola permohonan mahasiswa untuk melakukan tugas akhir</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+        <button class="btn btn-outline-success" onclick="exportData()">
+            <i class="fas fa-download"></i> Export
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">Total Pengajuan</h5>
+                        <h3 class="mb-0">1</h3>
+                    </div>
+                    <i class="fas fa-clipboard-list fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">Menunggu Review</h5>
+                        <h3 class="mb-0">{{ pending_count|default:0 }}</h3>
+                    </div>
+                    <i class="fas fa-clock fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">Disetujui</h5>
+                        <h3 class="mb-0">{{ approved_count|default:0 }}</h3>
+                    </div>
+                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">Ditolak</h5>
+                        <h3 class="mb-0">{{ rejected_count|default:0 }}</h3>
+                    </div>
+                    <i class="fas fa-times-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Table -->
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">
+            <i class="fas fa-list text-primary"></i> Daftar Pengajuan TA
+        </h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="refreshTable()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-cog"></i> Opsi
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="bulkApprove()"><i class="fas fa-check-double"></i> Setujui Terpilih</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="bulkReject()"><i class="fas fa-times"></i> Tolak Terpilih</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="printTable()"><i class="fas fa-print"></i> Print</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" id="pengajuanTable">
+            <thead>
+                <tr>
+                    <th width="3%">
+                        <input type="checkbox" id="selectAll" class="form-check-input">
+                    </th>
+                    <th width="5%">No</th>
+                    <th width="12%">NIM</th>
+                    <th width="20%">Nama Mahasiswa</th>
+                    <th width="12%">Bidang Minat</th>
+                    <th width="8%">IPK</th>
+                    <th width="8%">SKS</th>
+                    <th width="12%">Tanggal Ajuan</th>
+                    <th width="10%">Status</th>
+                    <th width="10%">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <div id="alertPlaceholder" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+                {% for pengajuan in pengajuan_list %}
+<tr data-id="{{ pengajuan.id }}" class="pengajuan-row">
+    <td>
+        <input type="checkbox" class="form-check-input row-checkbox" value="{{ pengajuan.id }}">
+    </td>
+    <td class="text-center">{{ forloop.counter }}</td>
+    <td>
+        <strong class="text-primary">10223049</strong>
+    </td>
+    <td>
+        <div class="d-flex align-items-center">
+            <div class="avatar-circle me-3">
+                {{ pengajuan.mahasiswa.nama|first|upper }}
+            </div>
+            <div>
+                <strong>Remon</strong><br>
+                <small class="text-muted">
+                    <i class="fas fa-calendar-alt"></i> Angkatan {{ pengajuan_ta.mahasiswa.angkatan }}
+                </small>
+            </div>
+        </div>
+    </td>
+
+
+                    <td>
+                        <span class="badge bg-info text-dark">
+                            <i class="fas fa-tag me-1"></i>
+                            {{ pengajuan.bidang_minat|default:"Belum Ditentukan" }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if pengajuan.ipk >= 3.0 %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                            <i class="fas fa-star"></i> {{ pengajuan.ipk|floatformat:2 }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if pengajuan.sks_lulus >= 120 %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                            <i class="fas fa-graduation-cap"></i> {{ pengajuan.sks_lulus }} SKS
+                        </span>
+                    </td>
+                    <td>
+                        <div class="date-display">
+                            <strong>{{ pengajuan.created_at|date:"d M Y" }}</strong>
+                            <br>
+                            <small class="text-muted">{{ pengajuan.created_at|time:"H:i" }}</small>
+                        </div>
+                    </td>
+                    <td>
+                        {% if pengajuan.status == 'pending' %}
+                            <span class="status-badge status-pending">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                        {% elif pengajuan.status == 'approved' %}
+                            <span class="status-badge status-approved">
+                                <i class="fas fa-check"></i> Disetujui
+                            </span>
+                            {% if pengajuan.approved_at %}
+                                <br><small class="text-muted">{{ pengajuan.approved_at|date:"d/m/Y" }}</small>
+                            {% endif %}
+                        {% elif pengajuan.status == 'rejected' %}
+                            <span class="status-badge status-rejected">
+                                <i class="fas fa-times"></i> Ditolak
+                            </span>
+                            {% if pengajuan.rejected_at %}
+                                <br><small class="text-muted">{{ pengajuan.rejected_at|date:"d/m/Y" }}</small>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            {% if pengajuan.status == 'pending' %}
+                                <button type="button" class="btn btn-sm btn-success"
+                                        onclick="showReviewModal({{ pengajuan.id }}, 'approve')"
+                                        data-bs-toggle="tooltip" title="Setujui">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger"
+                                        onclick="showReviewModal({{ pengajuan.id }}, 'reject')"
+                                        data-bs-toggle="tooltip" title="Tolak">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            {% endif %}
+                            <button type="button" class="btn btn-sm btn-outline-info"
+                                    onclick="showDetail({{ pengajuan.id }})"
+                                    data-bs-toggle="tooltip" title="Detail">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center py-5">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">Tidak ada pengajuan TA</h5>
+                            <p class="text-muted">Belum ada mahasiswa yang mengajukan TA</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if pengajuan_list.has_other_pages %}
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+        <div class="pagination-info">
+            <small class="text-muted">
+                Menampilkan {{ pengajuan_list.start_index }} - {{ pengajuan_list.end_index }} 
+                dari {{ pengajuan_list.paginator.count }} data
+            </small>
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm mb-0">
+                {% if pengajuan_list.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pengajuan_list.previous_page_number }}">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in pengajuan_list.paginator.page_range %}
+                    {% if pengajuan_list.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if pengajuan_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pengajuan_list.next_page_number }}">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle"></i> Detail Pengajuan TA
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" id="reviewModalHeader">
+                <h5 class="modal-title" id="reviewModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reviewContent"></div>
+                <div class="mb-3">
+                    <label for="reviewNote" class="form-label fw-semibold">Catatan Admin</label>
+                    <textarea id="reviewNote" class="form-control" rows="4" 
+                              placeholder="Berikan catatan atau alasan untuk keputusan ini..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button id="confirmReviewBtn" type="button" class="btn" onclick="processReview()"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.content-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-approved {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.pengajuan-row:hover {
+    background-color: #f8f9fa;
+}
+
+.date-display {
+    font-size: 0.875rem;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.125rem;
+    }
+    
+    .action-buttons .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem;
+    }
+}
+</style>
+
+<script>
+// Global variables
+let currentPengajuanId = null;
+let currentAction = null;
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+// Select all checkbox functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.row-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+
+// Show detail modal
+function showDetail(pengajuanId) {
+    // Fetch detail data via AJAX
+    fetch(`/admin/pengajuan-ta/${pengajuanId}/detail/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('detailContent').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary"><i class="fas fa-user"></i> Data Mahasiswa</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>NIM:</strong></td><td>${data.mahasiswa.nim}</td></tr>
+                            <tr><td><strong>Nama:</strong></td><td>${data.mahasiswa.nama}</td></tr>
+                            <tr><td><strong>Jurusan:</strong></td><td>${data.mahasiswa.jurusan}</td></tr>
+                            <tr><td><strong>Angkatan:</strong></td><td>${data.mahasiswa.angkatan}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary"><i class="fas fa-chart-line"></i> Data Akademik</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>IPK:</strong></td><td><span class="badge ${data.ipk >= 3.0 ? 'bg-success' : 'bg-warning'}">${data.ipk}</span></td></tr>
+                            <tr><td><strong>SKS Lulus:</strong></td><td><span class="badge ${data.sks_lulus >= 120 ? 'bg-success' : 'bg-warning'}">${data.sks_lulus} SKS</span></td></tr>
+                            <tr><td><strong>Semester:</strong></td><td>${data.semester}</td></tr>
+                            <tr><td><strong>Bidang Minat:</strong></td><td>${data.bidang_minat}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-primary"><i class="fas fa-comment-alt"></i> Keterangan</h6>
+                        <div class="bg-light p-3 rounded">${data.keterangan}</div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-primary"><i class="fas fa-clock"></i> Informasi Pengajuan</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Tanggal Pengajuan:</strong></td><td>${data.created_at}</td></tr>
+                            <tr><td><strong>Status:</strong></td><td><span class="status-badge status-${data.status}">${data.status_display}</span></td></tr>
+                            ${data.admin_note ? `<tr><td><strong>Catatan Admin:</strong></td><td>${data.admin_note}</td></tr>` : ''}
+                        </table>
+                    </div>
+                </div>
+            `;
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Gagal memuat detail pengajuan', 'danger');
+        });
+}
+
+// Show review modal
+function showReviewModal(pengajuanId, action) {
+    currentPengajuanId = pengajuanId;
+    currentAction = action;
+    
+    const modal = document.getElementById('reviewModal');
+    const header = document.getElementById('reviewModalHeader');
+    const title = document.getElementById('reviewModalTitle');
+    const btn = document.getElementById('confirmReviewBtn');
+    
+    if (action === 'approve') {
+        header.className = 'modal-header bg-success text-white';
+        title.innerHTML = '<i class="fas fa-check"></i> Setujui Pengajuan TA';
+        btn.className = 'btn btn-success';
+        btn.innerHTML = '<i class="fas fa-check"></i> Setujui';
+        document.getElementById('reviewContent').innerHTML = `
+            <div class="alert alert-success">
+                <i class="fas fa-info-circle"></i>
+                Anda akan menyetujui pengajuan TA mahasiswa ini. Mahasiswa akan dapat melanjutkan ke tahap pengajuan judul.
+            </div>
+        `;
+    } else {
+        header.className = 'modal-header bg-danger text-white';
+        title.innerHTML = '<i class="fas fa-times"></i> Tolak Pengajuan TA';
+        btn.className = 'btn btn-danger';
+        btn.innerHTML = '<i class="fas fa-times"></i> Tolak';
+        document.getElementById('reviewContent').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                Anda akan menolak pengajuan TA mahasiswa ini. Berikan alasan yang jelas untuk penolakan.
+            </div>
+        `;
+    }
+    
+    document.getElementById('reviewNote').value = '';
+    new bootstrap.Modal(modal).show();
+}
+
+// Process review
+function processReview() {
+    const note = document.getElementById('reviewNote').value;
+    
+    if (currentAction === 'reject' && !note.trim()) {
+        showAlert('Catatan wajib diisi untuk penolakan', 'warning');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('action', currentAction);
+    formData.append('note', note);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch(`/admin/pengajuan-ta/${currentPengajuanId}/review/`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(data.message, 'success');
+            bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
+            location.reload(); // Refresh page to show updated status
+        } else {
+            showAlert(data.message || 'Terjadi kesalahan', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Terjadi kesalahan sistem', 'danger');
+    });
+}
+
+// Bulk approve function
+function bulkApprove() {
+    const selected = document.querySelectorAll('.row-checkbox:checked');
+    if (selected.length === 0) {
+        showAlert('Pilih minimal satu pengajuan', 'warning');
+        return;
+    }
+    
+    const ids = Array.from(selected).map(cb => cb.value);
+    
+    if (confirm(`Setujui ${ids.length} pengajuan yang dipilih?`)) {
+        const formData = new FormData();
+        formData.append('action', 'bulk_approve');
+        formData.append('ids', JSON.stringify(ids));
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        
+        fetch('/admin/pengajuan-ta/bulk-action/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(data.message, 'success');
+                location.reload();
+            } else {
+                showAlert(data.message || 'Terjadi kesalahan', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Terjadi kesalahan sistem', 'danger');
+        });
+    }
+}
+
+// Show alert function
+function showAlert(message, type) {
+    const alertPlaceholder = document.getElementById('alertPlaceholder');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    alertPlaceholder.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
+}
+
+// Refresh table function
+function refreshTable() {
+    location.reload();
+}
+</script>
+{% endblock %}

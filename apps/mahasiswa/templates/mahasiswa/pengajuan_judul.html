@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengajuan Judul Tugas Akhir</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Gaya CSS tetap sama seperti yang Anda berikan */
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #0d6efd;
+        }
+        .section-title {
+            color: #0d6efd;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .required {
+            color: #dc3545;
+        }
+        .form-text {
+            font-size: 0.875rem;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+            color: white;
+            border-radius: 0.375rem 0.375rem 0 0 !important;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .student-info {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .progress-step::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: #dee2e6;
+            z-index: 1;
+        }
+        .progress-step:last-child::before {
+            display: none;
+        }
+        .progress-step.active::before {
+            background: #0d6efd;
+        }
+        .progress-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+        .progress-step.active .progress-circle {
+            background: #0d6efd;
+            color: white;
+        }
+        .progress-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+        .progress-step.active .progress-label {
+            color: #0d6efd;
+            font-weight: 600;
+        }
+
+         /* Modern Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            box-shadow: var(--shadow-lg);
+            background-color: #2152cf;
+            padding: 1rem 0;
+            border: none;
+            position: fixed;
+            width: 1550px;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--white) !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+            color: #e0e7ff !important;
+        }
+
+        .navbar-brand::before {
+            content: '';
+            font-size: 1.75rem;
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+     <!-- Top Navigation -->
+     <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:home' %}">
+                <span style="color: white;">
+                    <i class="fas fa-graduation-cap"></i> SIMONTA
+                  </span>
+            </a>
+            <!-- Tambahkan elemen navigasi lainnya jika diperlukan -->
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4 bg-light">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <!-- Progress Indicator -->
+                <div class="progress-indicator">
+                    <div class="progress-step active">
+                        <div class="progress-circle">1</div>
+                        <div class="progress-label">Pengajuan Judul</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="progress-circle">2</div>
+                        <div class="progress-label">Review Dosen</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="progress-circle">3</div>
+                        <div class="progress-label">Persetujuan</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="progress-circle">4</div>
+                        <div class="progress-label">Penugasan Pembimbing</div>
+                    </div>
+                </div>
+
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-file-alt me-2"></i>
+                            Form Pengajuan Judul Tugas Akhir
+                        </h4>
+                        <small class="opacity-75">Silakan lengkapi form di bawah ini untuk mengajukan judul TA Anda</small>
+                    </div>
+                    <div class="card-body">
+                        <!-- Student Information -->
+                        <div class="student-info">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong><i class="fas fa-user me-2"></i>Nama:</strong> {{ mahasiswa.nama }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong><i class="fas fa-id-card me-2"></i>NIM:</strong> {{ mahasiswa.nim }}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <strong><i class="fas fa-graduation-cap me-2"></i>Program Studi:</strong> {{ mahasiswa.jurusan }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong><i class="fas fa-calendar me-2"></i>Semester:</strong> {{ mahasiswa.semester }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Django Form -->
+                        <form method="post" id="pengajuanForm" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Judul dan Deskripsi -->
+                            <div class="form-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-heading"></i>
+                                    Judul dan Deskripsi Penelitian
+                                </h5>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="judul_utama" class="form-label">
+                                            Judul Utama <span class="required">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="judul_utama" name="judul_utama" 
+                                               placeholder="Masukkan judul utama tugas akhir Anda" value="{{ pengajuan.judul_utama|default_if_none:'' }}" required maxlength="150">
+                                        <div class="form-text">Maksimal 150 karakter. Gunakan bahasa Indonesia yang baik dan benar.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="judul_inggris" class="form-label">
+                                            Judul dalam Bahasa Inggris <span class="required">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="judul_inggris" name="judul_inggris" 
+                                               placeholder="Enter your thesis title in English" value="{{ pengajuan.judul_inggris|default_if_none:'' }}" required maxlength="150">
+                                        <div class="form-text">Maksimal 150 karakter. Terjemahan dari judul utama.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="deskripsi" class="form-label">
+                                            Deskripsi Penelitian <span class="required">*</span>
+                                        </label>
+                                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4" 
+                                                  placeholder="Jelaskan secara singkat tentang penelitian yang akan dilakukan, tujuan, dan manfaatnya" required maxlength="500">{{ pengajuan.deskripsi|default_if_none:'' }}</textarea>
+                                        <div class="form-text">Minimal 200 karakter, maksimal 500 karakter.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bidang dan Metodologi -->
+                            <div class="form-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-cogs"></i>
+                                    Bidang dan Metodologi
+                                </h5>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="bidang_penelitian" class="form-label">
+                                            Bidang Penelitian <span class="required">*</span>
+                                        </label>
+                                        <select class="form-select" id="bidang_penelitian" name="bidang_penelitian" required>
+                                            <option value="">Pilih bidang penelitian</option>
+                                            <option value="artificial_intelligence" {% if pengajuan.bidang_penelitian == "artificial_intelligence" %}selected{% endif %}>Artificial Intelligence</option>
+                                            <option value="machine_learning" {% if pengajuan.bidang_penelitian == "machine_learning" %}selected{% endif %}>Machine Learning</option>
+                                            <option value="web_development" {% if pengajuan.bidang_penelitian == "web_development" %}selected{% endif %}>Web Development</option>
+                                            <option value="mobile_development" {% if pengajuan.bidang_penelitian == "mobile_development" %}selected{% endif %}>Mobile Development</option>
+                                            <option value="data_science" {% if pengajuan.bidang_penelitian == "data_science" %}selected{% endif %}>Data Science</option>
+                                            <option value="cybersecurity" {% if pengajuan.bidang_penelitian == "cybersecurity" %}selected{% endif %}>Cybersecurity</option>
+                                            <option value="network" {% if pengajuan.bidang_penelitian == "network" %}selected{% endif %}>Network & Infrastructure</option>
+                                            <option value="game_development" {% if pengajuan.bidang_penelitian == "game_development" %}selected{% endif %}>Game Development</option>
+                                            <option value="iot" {% if pengajuan.bidang_penelitian == "iot" %}selected{% endif %}>Internet of Things (IoT)</option>
+                                            <option value="blockchain" {% if pengajuan.bidang_penelitian == "blockchain" %}selected{% endif %}>Blockchain</option>
+                                            <option value="computer_vision" {% if pengajuan.bidang_penelitian == "computer_vision" %}selected{% endif %}>Computer Vision</option>
+                                            <option value="nlp" {% if pengajuan.bidang_penelitian == "nlp" %}selected{% endif %}>Natural Language Processing</option>
+                                            <option value="other" {% if pengajuan.bidang_penelitian == "other" %}selected{% endif %}>Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="metodologi" class="form-label">
+                                            Metodologi Penelitian <span class="required">*</span>
+                                        </label>
+                                        <select class="form-select" id="metodologi" name="metodologi" required>
+                                            <option value="">Pilih metodologi</option>
+                                            <option value="quantitative" {% if pengajuan.metodologi == "quantitative" %}selected{% endif %}>Kuantitatif</option>
+                                            <option value="qualitative" {% if pengajuan.metodologi == "qualitative" %}selected{% endif %}>Kualitatif</option>
+                                            <option value="mixed" {% if pengajuan.metodologi == "mixed" %}selected{% endif %}>Mixed Method</option>
+                                            <option value="experimental" {% if pengajuan.metodologi == "experimental" %}selected{% endif %}>Eksperimental</option>
+                                            <option value="case_study" {% if pengajuan.metodologi == "case_study" %}selected{% endif %}>Studi Kasus</option>
+                                            <option value="design_research" {% if pengajuan.metodologi == "design_research" %}selected{% endif %}>Design Research</option>
+                                            <option value="action_research" {% if pengajuan.metodologi == "action_research" %}selected{% endif %}>Action Research</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="teknologi" class="form-label">
+                                            Teknologi/Tools yang Digunakan
+                                        </label>
+                                        <input type="text" class="form-control" id="teknologi" name="teknologi" 
+                                               placeholder="Contoh: Python, React, TensorFlow, MySQL, dll." value="{{ pengajuan.teknologi|default_if_none:'' }}">
+                                        <div class="form-text">Sebutkan teknologi, framework, atau tools utama yang akan digunakan.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Latar Belakang dan Tujuan -->
+                            <div class="form-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-bullseye"></i>
+                                    Latar Belakang dan Tujuan
+                                </h5>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="latar_belakang" class="form-label">
+                                            Latar Belakang Masalah <span class="required">*</span>
+                                        </label>
+                                        <textarea class="form-control" id="latar_belakang" name="latar_belakang" rows="4" 
+                                                  placeholder="Jelaskan masalah yang melatarbelakangi penelitian ini" required>{{ pengajuan.latar_belakang|default_if_none:'' }}</textarea>
+                                        <div class="form-text">Jelaskan konteks dan urgensi masalah yang akan diteliti.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="tujuan" class="form-label">
+                                            Tujuan Penelitian <span class="required">*</span>
+                                        </label>
+                                        <textarea class="form-control" id="tujuan" name="tujuan" rows="3" 
+                                                  placeholder="Sebutkan tujuan yang ingin dicapai dari penelitian ini" required>{{ pengajuan.tujuan|default_if_none:'' }}</textarea>
+                                        <div class="form-text">Jelaskan apa yang ingin dicapai atau dihasilkan dari penelitian.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="manfaat" class="form-label">
+                                            Manfaat Penelitian
+                                        </label>
+                                        <textarea class="form-control" id="manfaat" name="manfaat" rows="3" 
+                                                  placeholder="Jelaskan manfaat penelitian bagi akademik, praktisi, atau masyarakat">{{ pengajuan.manfaat|default_if_none:'' }}</textarea>
+                                        <div class="form-text">Jelaskan kontribusi dan manfaat yang diharapkan dari hasil penelitian.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rencana Penelitian -->
+                            <div class="form-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Rencana Penelitian
+                                </h5>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="waktu_mulai" class="form-label">
+                                            Rencana Mulai Penelitian <span class="required">*</span>
+                                        </label>
+                                        <input type="date" class="form-control" id="waktu_mulai" name="waktu_mulai" 
+                                               value="{{ pengajuan.waktu_mulai|date:'Y-m-d'|default_if_none:'' }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="waktu_selesai" class="form-label">
+                                            Target Selesai <span class="required">*</span>
+                                        </label>
+                                        <input type="date" class="form-control" id="waktu_selesai" name="waktu_selesai" 
+                                               value="{{ pengajuan.waktu_selesai|date:'Y-m-d'|default_if_none:'' }}" required>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="rencana_kerja" class="form-label">
+                                            Rencana Kerja/Timeline
+                                        </label>
+                                        <textarea class="form-control" id="rencana_kerja" name="rencana_kerja" rows="4" 
+                                                  placeholder="Jelaskan tahapan-tahapan penelitian yang akan dilakukan">{{ pengajuan.rencana_kerja|default_if_none:'' }}</textarea>
+                                        <div class="form-text">Opsional: Uraikan rencana kerja dan timeline penelitian secara garis besar.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Catatan Tambahan -->
+                            <div class="form-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-sticky-note"></i>
+                                    Informasi Tambahan
+                                </h5>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <label for="catatan" class="form-label">
+                                            Catatan Tambahan
+                                        </label>
+                                        <textarea class="form-control" id="catatan" name="catatan" rows="3" 
+                                                  placeholder="Informasi tambahan yang perlu disampaikan (opsional)">{{ pengajuan.catatan|default_if_none:'' }}</textarea>
+                                        <div class="form-text">Sampaikan informasi lain yang menurut Anda penting untuk diketahui.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="persetujuan" name="persetujuan" required>
+                                            <label class="form-check-label" for="persetujuan">
+                                                <strong>Saya menyatakan bahwa informasi yang diberikan adalah benar dan saya bertanggung jawab atas kebenaran data tersebut.</strong>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                                <a href="{% url 'mahasiswa:dashboard' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                    Kembali ke Dashboard
+                                </a>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary me-2" onclick="saveDraft()">
+                                        <i class="fas fa-save me-2"></i>
+                                        Simpan Draft
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" name="action" value="submit">
+                                        <i class="fas fa-paper-plane me-2"></i>
+                                        Submit Pengajuan
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Help Section -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            Informasi Penting
+                        </h6>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Pastikan semua field yang bertanda <span class="required">*</span> telah diisi dengan lengkap
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Judul yang diajukan harus original dan belum pernah diteliti sebelumnya
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Setelah submit, Anda tidak dapat mengubah pengajuan. Pastikan semua data sudah benar
+                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Pengajuan akan diproses dalam 3-5 hari kerja
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form validation and interaction
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('#pengajuanForm');
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            // Real-time validation
+            requiredFields.forEach(field => {
+                field.addEventListener('blur', function() {
+                    validateField(this);
+                });
+                
+                field.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid')) {
+                        validateField(this);
+                    }
+                });
+            });
+            
+            // Character counter for text areas
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                const maxLength = textarea.getAttribute('maxlength');
+                if (maxLength) {
+                    addCharacterCounter(textarea, maxLength);
+                }
+            });
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                let isValid = true;
+                requiredFields.forEach(field => {
+                    if (!validateField(field)) {
+                        isValid = false;
+                    }
+                });
+                
+                if (isValid) {
+                    // Show loading state
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Mengirim...';
+                    submitBtn.disabled = true;
+                    
+                    // Kirim data ke server
+                    fetch("{% url 'mahasiswa:pengajuan_judul' %}", {
+                        method: 'POST',
+                        body: new FormData(this),
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        
+                        if (data.success) {
+                            showAlert('success', 'Pengajuan berhasil dikirim! Anda akan menerima notifikasi melalui email.');
+                            setTimeout(() => {
+                                window.location.href = "{% url 'mahasiswa:dashboard' %}";
+                            }, 2000);
+                        } else {
+                            showAlert('danger', data.message || 'Terjadi kesalahan saat mengirim pengajuan.');
+                        }
+                    })
+                    .catch(error => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        showAlert('danger', 'Terjadi kesalahan: ' + error.message);
+                    });
+                } else {
+                    // Scroll to first error
+                    const firstError = form.querySelector('.is-invalid');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstError.focus();
+                    }
+                }
+            });
+        });
+        
+        function validateField(field) {
+            const value = field.value.trim();
+            const fieldName = field.name;
+            let isValid = true;
+            let errorMessage = '';
+            
+            // Required field validation
+            if (field.hasAttribute('required') && !value) {
+                isValid = false;
+                errorMessage = 'Field ini wajib diisi';
+            }
+            
+            // Specific validations
+            switch (fieldName) {
+                case 'judul_utama':
+                case 'judul_inggris':
+                    if (value && value.length > 150) {
+                        isValid = false;
+                        errorMessage = 'Maksimal 150 karakter';
+                    }
+                    break;
+                case 'deskripsi':
+                    if (value && value.length < 200) {
+                        isValid = false;
+                        errorMessage = 'Minimal 200 karakter';
+                    } else if (value && value.length > 500) {
+                        isValid = false;
+                        errorMessage = 'Maksimal 500 karakter';
+                    }
+                    break;
+                case 'waktu_selesai':
+                    const startDate = document.getElementById('waktu_mulai').value;
+                    if (startDate && value && new Date(value) <= new Date(startDate)) {
+                        isValid = false;
+                        errorMessage = 'Tanggal selesai harus setelah tanggal mulai';
+                    }
+                    break;
+            }
+            
+            // Update field appearance
+            if (isValid) {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+                removeErrorMessage(field);
+            } else {
+                field.classList.remove('is-valid');
+                field.classList.add('is-invalid');
+                showErrorMessage(field, errorMessage);
+            }
+            
+            return isValid;
+        }
+        
+        function showErrorMessage(field, message) {
+            removeErrorMessage(field);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'invalid-feedback';
+            errorDiv.textContent = message;
+            field.parentNode.appendChild(errorDiv);
+        }
+        
+        function removeErrorMessage(field) {
+            const existingError = field.parentNode.querySelector('.invalid-feedback');
+            if (existingError) {
+                existingError.remove();
+            }
+        }
+        
+        function addCharacterCounter(textarea, maxLength) {
+            const counter = document.createElement('div');
+            counter.className = 'form-text text-end';
+            counter.style.fontSize = '0.75rem';
+            textarea.parentNode.appendChild(counter);
+            
+            function updateCounter() {
+                const remaining = maxLength - textarea.value.length;
+                counter.textContent = `${textarea.value.length}/${maxLength} karakter`;
+                counter.style.color = remaining < 50 ? '#dc3545' : '#6c757d';
+            }
+            
+            textarea.addEventListener('input', updateCounter);
+            updateCounter();
+        }
+        
+        function showAlert(type, message) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show mt-3`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.card-body').insertBefore(alert, document.querySelector('form'));
+            
+            // Auto dismiss after 3 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 200);
+            }, 3000);
+        }
+        
+        function saveDraft() {
+            const form = document.querySelector('#pengajuanForm');
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+            btn.disabled = true;
+            
+            // Kirim data ke server sebagai draft
+            fetch("#", {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                if (data.success) {
+                    showAlert('success', 'Draft berhasil disimpan!');
+                } else {
+                    showAlert('danger', data.message || 'Terjadi kesalahan saat menyimpan draft.');
+                }
+            })
+            .catch(error => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showAlert('danger', 'Terjadi kesalahan: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>

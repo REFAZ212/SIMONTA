@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Dosen - Sistem Informasi Akademik</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --info-color: #0891b2;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #334155;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            box-shadow: var(--card-shadow);
+            padding: 0.75rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #ffffff !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .navbar-brand:hover {
+            color: #e0e7ff !important;
+        }
+
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 75px;
+            left: 0;
+            width: 260px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            min-height: calc(100vh - 80px);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-brand {
+            color: white;
+            text-decoration: none;
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-brand i {
+            margin-right: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .sidebar.collapsed .sidebar-brand span {
+            display: none;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-link {
+            color: #cbd5e1 !important;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0;
+            transition: var(--transition);
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff !important;
+            border-left-color: #60a5fa;
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #ffffff !important;
+            border-left-color: #ffffff;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            margin-right: 0.75rem;
+        }
+
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
+
+        /* Main Content */
+        main {
+            margin-left: 260px;
+            padding: 80px 1.5rem 1.5rem;
+            background-color: var(--light-bg);
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ main {
+            margin-left: 70px;
+        }
+
+        /* Academic Header */
+        .academic-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .academic-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .academic-header p {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* Statistics Cards */
+        .stats-card {
+            background: #ffffff;
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1.25rem;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+            border-left: 4px solid transparent;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .stats-card.primary { border-left-color: var(--primary-color); }
+        .stats-card.success { border-left-color: var(--success-color); }
+        .stats-card.info { border-left-color: var(--info-color); }
+        .stats-card.warning { border-left-color: var(--warning-color); }
+
+        .icon-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Card Modern */
+        .card-modern {
+            background: #ffffff;
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .card-modern:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table Modern */
+        .table-modern {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-modern th {
+            background: #f8f9fa;
+            border-top: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: #495057;
+            padding: 1rem;
+        }
+
+        .table-modern td {
+            vertical-align: middle;
+            border-color: #e9ecef;
+            padding: 1rem;
+        }
+
+        /* Badge Status */
+        .badge-status {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Progress Thin */
+        .progress-thin {
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        /* Schedule Item */
+        .schedule-item {
+            border-left: 3px solid #dee2e6;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .schedule-item:hover {
+            border-left-color: var(--primary-color);
+        }
+
+        /* Quick Action Button */
+        .quick-action-btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+        }
+
+        /* Alert Academic */
+        .alert-academic {
+            border: none;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                top: 0;
+                left: -100%;
+                width: 250px;
+                height: 100vh;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .sidebar.collapsed {
+                left: -100%;
+                width: 250px;
+            }
+
+            main {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+
+            .academic-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-card, .card-modern {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar, .navbar {
+                display: none;
+            }
+
+            main {
+                margin-left: 0 !important;
+            }
+
+            .btn, .nav-link {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-graduation-cap"></i> SIMONTA
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <span class="nav-link">
+                            <i class="fas fa-user-circle me-2"></i>{{ user.username }}
+                        </span>
+                        <a href="{% url 'users:logout' %}" class="nav-link" onclick="logoutConfirm(event)">
+                            <i class="fas fa-sign-out-alt me-2"></i> Keluar
+                        </a>
+                    {% else %}
+                        <a class="nav-link" href="{% url 'users:login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i> Masuk
+                        </a>
+                        <a class="nav-link" href="{% url 'users:register' %}">
+                            <i class="fas fa-user-plus me-2"></i> Daftar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>DosenPortal</span>
+            </a>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a href="{% url 'dosen:dashboard' %}" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'dosen:pengajuan_judul_list' %}" class="nav-link">
+                    <i class="fas fa-file-alt"></i> <!-- Representasi dokumen/judul -->
+
+                    <span>Pengajuan Judul</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'dosen:buat_jadwal' %}" class="nav-link">
+                    <i class="fas fa-calendar-plus"></i>
+                    <span>Buat Jadwal</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'dosen:daftar_jadwal' %}" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Jadwal Bimbingan</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'dosen:nilai_mahasiswa_dummy' %}" class="nav-link">
+                    <i class="fas fa-star"></i>
+                    <span>Penilaian</span>
+                </a>
+                
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Laporan</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifikasi</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <section class="py-4">
+            <div class="container-fluid">
+                <!-- Academic Header -->
+                <div class="academic-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="h3 mb-2 fw-bold">
+                                <i class="fas fa-graduation-cap me-2"></i>
+                                Dashboard Dosen
+                            </h1>
+                            <p class="mb-0">
+                                Selamat datang, <strong>{{ dosen.nama }}</strong> | 
+                                Fakultas {{ dosen.fakultas|default:"Teknologi Informasi" }}
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-flex flex-column align-items-md-end">
+                                <small class="text-muted">Semester Aktif</small>
+                                <strong>2024/2025 - Semester Ganjil</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card primary">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-primary bg-opacity-10 text-primary me-3">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.75rem;">Mahasiswa Bimbingan</h6>
+                                        <h3 class="text-primary fw-bold mb-1">{{ mahasiswa_bimbingan.count }}</h3>
+                                        <div class="d-flex align-items-center">
+                                            <small class="text-muted me-2">dari {{ dosen.max_bimbingan|default:"10" }} maksimal</small>
+                                            <div class="progress progress-thin flex-grow-1">
+                                                <div class="progress-bar bg-primary"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card success">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-success bg-opacity-10 text-success me-3">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.75rem;">Slot Tersedia</h6>
+                                        <h3 class="text-success fw-bold mb-1">{{ dosen.available_slots }}</h3>
+                                        <small class="text-muted">Siap menerima mahasiswa baru</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card info">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-info bg-opacity-10 text-info me-3">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.75rem;">Jadwal Bimbingan</h6>
+                                        <h3 class="text-info fw-bold mb-1">{{ jadwal_bimbingan.count }}</h3>
+                                        <small class="text-muted">Sesi aktif bulan ini</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card warning">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-warning bg-opacity-10 text-warning me-3">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.75rem;">Tugas Pending</h6>
+                                        <h3 class="text-warning fw-bold mb-1">{{ tugas_pending|default:"0" }}</h3>
+                                        <small class="text-muted">Memerlukan review</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Alert -->
+                {% if dosen.available_slots > 0 %}
+                    <div class="alert alert-academic alert-primary mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Informasi:</strong> Anda masih memiliki {{ dosen.available_slots }} slot bimbingan tersedia untuk menerima mahasiswa baru.
+                            </div>
+                            <a href="#" class="btn btn-sm btn-outline-primary ms-3" onclick="alert('Fitur akan segera tersedia')">
+                                Kelola Slot
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Content Row -->
+                <div class="row g-4">
+                    <!-- Daftar Mahasiswa Bimbingan -->
+                    <div class="col-lg-8">
+                        <div class="card card-modern">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="card-title mb-1">
+                                            <i class="fas fa-user-graduate text-primary me-2"></i>
+                                            Mahasiswa Bimbingan
+                                        </h5>
+                                        <p class="text-muted small mb-0">Daftar mahasiswa yang Anda bimbing</p>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a href="{% url 'dosen:buat_jadwal' %}" class="btn btn-primary quick-action-btn">
+                                            <i class="fas fa-plus me-1"></i> Buat Jadwal
+                                        </a>
+                                        <button type="button" class="btn btn-outline-secondary quick-action-btn" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="alert('Fitur export akan segera tersedia')">
+                                                <i class="fas fa-download me-2"></i> Export Data
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="alert('Fitur laporan akan segera tersedia')">
+                                                <i class="fas fa-chart-bar me-2"></i> Laporan
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal Detail Mahasiswa -->
+                            <div class="modal fade" id="modalDetailMahasiswa" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="modalDetailLabel">Detail Mahasiswa</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                    </div>
+                                    <div class="modal-body" id="modalDetailContent">
+                                    <!-- Diisi via JavaScript -->
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="card-body pt-3">
+                                {% if mahasiswa_bimbingan %}
+                                    <div class="table-responsive">
+                                        <table class="table table-modern">
+                                            <thead>
+                                                <tr>
+                                                    <th width="15%">NIM</th>
+                                                    <th width="25%">Nama Mahasiswa</th>
+                                                    <th width="12%">IPK</th>
+                                                    <th width="15%">Semester</th>
+                                                    <th width="18%">Status</th>
+                                                    <th width="15%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for mhs in mahasiswa_bimbingan %}
+                                                    <tr>
+                                                        <td>
+                                                            <span class="fw-medium">{{ mhs.nim }}</span>
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <div class="fw-medium">{{ mhs.nama }}</div>
+                                                                <small class="text-muted">{{ mhs.jurusan}}</small>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge-status {% if mhs.ipk >= 3.5 %}bg-success{% elif mhs.ipk >= 3.0 %}bg-primary{% else %}bg-warning{% endif %}">
+                                                                {{ mhs.ipk|floatformat:2 }}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="text-muted">{{ mhs.semester|default:"8" }}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge-status bg-success bg-opacity-10 text-success">
+                                                                <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                                                                Aktif
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-sm">
+                                                                <a href="#" 
+                                                                   class="btn btn-outline-primary" title="Kelola Nilai">
+                                                                    <i class="fas fa-star"></i>
+                                                                </a>
+                                                                <a href="#"
+                                                                class="btn btn-outline-info"
+                                                                title="Detail"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modalDetailMahasiswa"
+                                                                data-nama="{{ mhs.nama }}"
+                                                                data-nim="{{ mhs.nim }}"
+                                                                data-ipk="{{ mhs.ipk }}"
+                                                                data-semester="{{ mhs.semester }}"
+                                                                data-jurusan="{{ mhs.jurusan }}">
+                                                                <i class="fas fa-eye"></i>
+                                                                </a>
+
+
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <div class="icon-wrapper bg-light text-muted mx-auto mb-3">
+                                            <i class="fas fa-user-graduate"></i>
+                                        </div>
+                                        <h6 class="text-muted">Belum Ada Mahasiswa Bimbingan</h6>
+                                        <p class="text-muted small mb-3">Anda belum memiliki mahasiswa yang dibimbing saat ini.</p>
+                                        <a href="#" class="btn btn-outline-primary" onclick="alert('Fitur pengaturan akan segera tersedia')">
+                                            <i class="fas fa-cog me-1"></i> Kelola Pengaturan
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar: Jadwal & Notifikasi -->
+                    <div class="col-lg-4">
+                        <!-- Jadwal Bimbingan Mendatang -->
+                        <div class="card card-modern mb-4">
+                            <div class="card-header bg-white border-0">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-calendar-week text-info me-2"></i>
+                                    Jadwal Mendatang
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                {% for jadwal in jadwal_bimbingan|slice:":5" %}
+                                    <div class="schedule-item">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1 fw-medium">{{ jadwal.mahasiswa.nama }}</h6>
+                                                <p class="text-muted small mb-1">{{ jadwal.topik|truncatechars:40 }}</p>
+                                                <div class="d-flex align-items-center text-muted small">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ jadwal.tanggal|date:"d M Y" }} - {{ jadwal.waktu|time:"H:i" }}
+                                                </div>
+                                            </div>
+                                            <span class="badge-status bg-primary bg-opacity-10 text-primary ms-2">
+                                                {{ jadwal.tanggal|timeuntil|truncatechars:10 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="text-center py-3">
+                                        <i class="fas fa-calendar-times text-muted mb-2" style="font-size: 1.5rem;"></i>
+                                        <p class="text-muted small mb-0">Tidak ada jadwal bimbingan yang akan datang.</p>
+                                    </div>
+                                {% endfor %}
+                                {% if jadwal_bimbingan.count > 5 %}
+                                    <div class="text-center mt-3">
+                                        <a href="#" class="btn btn-sm btn-outline-primary" onclick="alert('Fitur lihat semua jadwal akan segera tersedia')">
+                                            Lihat Semua Jadwal
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Aktivitas Terbaru -->
+                        <div class="card card-modern">
+                            <div class="card-header bg-white border-0">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-bell text-warning me-2"></i>
+                                    Aktivitas Terbaru
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-timeline">
+                                    <div class="d-flex mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-success bg-opacity-10 text-success rounded-circle p-2">
+                                                <i class="fas fa-check" style="font-size: 0.75rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1 small fw-medium">Nilai berhasil diinput</h6>
+                                            <p class="text-muted small mb-1">Johanes Doe - Pemrograman Web</p>
+                                            <small class="text-muted">2 jam yang lalu</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-info bg-opacity-10 text-info rounded-circle p-2">
+                                                <i class="fas fa-calendar" style="font-size: 0.75rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1 small fw-medium">Jadwal bimbingan baru</h6>
+                                            <p class="text-muted small mb-1">Jane Smith - Skripsi</p>
+                                            <small class="text-muted">1 hari yang lalu</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2">
+                                                <i class="fas fa-user-plus" style="font-size: 0.75rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1 small fw-medium">Mahasiswa baru bergabung</h6>
+                                            <p class="text-muted small mb-1">Robert Wilson</p>
+                                            <small class="text-muted">3 hari yang lalu</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+         function logoutConfirm(event) {
+    event.preventDefault(); // Cegah link langsung terbuka
+
+    Swal.fire({
+      title: 'Konfirmasi Keluar',
+      text: 'Apakah Anda yakin ingin keluar?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0d6efd',  // biru
+      cancelButtonColor: '#343a40',  // hitam gelap
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal',
+      background: '#fff',
+      color: '#000'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Arahkan ke URL logout Django
+        window.location.href = "{% url 'users:login' %}";
+      }
+    });
+  }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Card hover effects
+            const cards = document.querySelectorAll('.stats-card, .card-modern');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-4px)');
+                card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
+            });
+
+            // Button loading states
+            const buttons = document.querySelectorAll('.btn-primary, .quick-action-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (!this.classList.contains('dropdown-toggle')) {
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+                        this.disabled = true;
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                        }, 2000);
+                    }
+                });
+            });
+
+            // Sidebar toggle
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarToggle = document.createElement('button');
+            sidebarToggle.className = 'btn btn-primary d-md-none position-fixed';
+            sidebarToggle.style = 'top: 20px; left: 20px; z-index: 1051;';
+            sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            document.body.appendChild(sidebarToggle);
+
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(tooltipTriggerEl => {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Auto-refresh data setiap 5 menit
+            setInterval(() => {
+                console.log('Auto-refresh data...');
+            }, 300000);
+        });
+
+    
+        document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('modalDetailMahasiswa');
+    modal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+
+        const nama = button.getAttribute('data-nama');
+        const nim = button.getAttribute('data-nim');
+        const ipk = button.getAttribute('data-ipk');
+        const semester = button.getAttribute('data-semester') || '8';
+        const jurusan = button.getAttribute('data-jurusan');
+
+        const isi = `
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>NIM:</strong> ${nim}</li>
+                <li class="list-group-item"><strong>Nama:</strong> ${nama}</li>
+                <li class="list-group-item"><strong>Jurusan:</strong> ${jurusan}</li>
+                <li class="list-group-item"><strong>IPK:</strong> ${parseFloat(ipk).toFixed(2)}</li>
+                <li class="list-group-item"><strong>Semester:</strong> ${semester}</li>
+            </ul>
+        `;
+
+        modal.querySelector('#modalDetailContent').innerHTML = isi;
+    });
+});
+
+
+
+    </script>
+</body>
+</html>

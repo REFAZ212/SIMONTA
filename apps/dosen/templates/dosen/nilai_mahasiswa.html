@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Penilaian Tugas Akhir - Sistem Bimbingan{% endblock %}
+{% block page_title %}Penilaian Tugas Akhir{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #f5f6fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .container-fluid {
+        max-width: 1400px;
+        padding: 2rem 1.5rem;
+    }
+
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: none;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .form-control[readonly] {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+        border: none;
+        border-radius: 50px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        border: none;
+        border-radius: 50px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+    }
+
+    .student-info {
+        background: rgba(13, 110, 253, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+    }
+
+    .grade-display {
+        font-weight: 600;
+        color: #0d6efd;
+        margin-left: 1rem;
+    }
+
+    .invalid-feedback {
+        display: none;
+        color: #dc3545;
+        font-size: 0.85rem;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control.is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+
+    .alert-dismissible {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        max-width: 400px;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-4">Penilaian Tugas Akhir Mahasiswa</h4>
+
+                    <!-- Student Information -->
+                    <div class="student-info">
+                        <h5 class="mb-3">Informasi Mahasiswa</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <strong>Nama:</strong> {{ mahasiswa.nama|default:"Ahmad Ali" }}
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>NIM:</strong> {{ mahasiswa.nim|default:"1234567890" }}
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Judul Tugas Akhir:</strong> {{ mahasiswa.judul_ta|default:"SISTEM MONITORING TUGAS AKHIR" }}
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Program Studi:</strong> {{ mahasiswa.prodi|default:"Program Studi" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assessment Form -->
+                    <form method="POST" action="#" id="assessmentForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <!-- Nilai Proposal -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nilai_proposal.id_for_label }}" class="form-label">{{ form.nilai_proposal.label }}</label>
+                                {{ form.nilai_proposal }}
+                                <small class="form-text text-muted">{{ form.nilai_proposal.help_text }}</small>
+                                <div class="invalid-feedback"></div>
+                                {% if form.nilai_proposal.errors %}
+                                    <div class="text-danger">{{ form.nilai_proposal.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Nilai Implementasi -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nilai_implementasi.id_for_label }}" class="form-label">{{ form.nilai_implementasi.label }}</label>
+                                {{ form.nilai_implementasi }}
+                                <small class="form-text text-muted">{{ form.nilai_implementasi.help_text }}</small>
+                                <div class="invalid-feedback"></div>
+                                {% if form.nilai_implementasi.errors %}
+                                    <div class="text-danger">{{ form.nilai_implementasi.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Nilai Laporan -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nilai_laporan.id_for_label }}" class="form-label">{{ form.nilai_laporan.label }}</label>
+                                {{ form.nilai_laporan }}
+                                <small class="form-text text-muted">{{ form.nilai_laporan.help_text }}</small>
+                                <div class="invalid-feedback"></div>
+                                {% if form.nilai_laporan.errors %}
+                                    <div class="text-danger">{{ form.nilai_laporan.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Nilai Presentasi -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nilai_presentasi.id_for_label }}" class="form-label">{{ form.nilai_presentasi.label }}</label>
+                                {{ form.nilai_presentasi }}
+                                <small class="form-text text-muted">{{ form.nilai_presentasi.help_text }}</small>
+                                <div class="invalid-feedback"></div>
+                                {% if form.nilai_presentasi.errors %}
+                                    <div class="text-danger">{{ form.nilai_presentasi.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Komentar -->
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.komentar.id_for_label }}" class="form-label">{{ form.komentar.label }}</label>
+                                {{ form.komentar }}
+                                <small class="form-text text-muted">{{ form.nilai_komentar.help_text }}</small>
+                                <div class="invalid-feedback"></div>
+                                {% if form.komentar.errors %}
+                                    <div class="text-danger">{{ form.komentar.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Nilai Akhir -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nilai_akhir.id_for_label }}" class="form-label">{{ form.nilai_akhir.label }}</label>
+                                {{ form.nilai_akhir }}
+                                <small class="form-text text-muted">{{ form.nilai_akhir.help_text }}</small>
+                                <span id="letter-grade" class="grade-display"></span>
+                                <div class="invalid-feedback"></div>
+                                {% if form.nilai_akhir.errors %}
+                                    <div class="text-danger">{{ form.nilai_akhir.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Non-field errors -->
+                            {% if form.non_field_errors %}
+                                <div class="col-12 mb-3">
+                                    <div class="alert alert-danger">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit and Cancel Buttons -->
+                        <div class="mt-4 d-flex flex-column flex-md-row gap-2">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="fas fa-save me-2"></i>Simpan Penilaian
+                            </button>
+                            <a href="{% url 'dosen:dashboard' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('#assessmentForm');
+    const submitBtn = form.querySelector('#submitBtn');
+    const inputs = {
+        proposal: form.querySelector('#id_nilai_proposal'),
+        implementasi: form.querySelector('#id_nilai_implementasi'),
+        laporan: form.querySelector('#id_nilai_laporan'),
+        presentasi: form.querySelector('#id_nilai_presentasi'),
+        akhir: form.querySelector('#id_nilai_akhir'),
+        komentar: form.querySelector('#id_komentar'),
+    };
+    const letterGradeDisplay = document.querySelector('#letter-grade');
+
+    // Weighting for final grade calculation
+    const weights = {
+        proposal: 0.20,
+        implementasi: 0.30,
+        laporan: 0.30,
+        presentasi: 0.20,
+    };
+
+    // Grading scale
+    function getLetterGrade(score) {
+        if (score >= 85) return 'A';
+        if (score >= 70) return 'B';
+        if (score >= 55) return 'C';
+        if (score >= 40) return 'D';
+        return 'E';
+    }
+
+    // Validate input score
+    function validateScore(input) {
+        const value = parseFloat(input.value);
+        const isValid = !isNaN(value) && value >= 0 && value <= 100;
+        const feedback = input.parentElement.querySelector('.invalid-feedback');
+        if (!isValid) {
+            input.classList.add('is-invalid');
+            feedback.textContent = 'Nilai harus antara 0 dan 100.';
+        } else {
+            input.classList.remove('is-invalid');
+            feedback.textContent = '';
+        }
+        return isValid;
+    }
+
+    // Calculate final grade
+    function calculateFinalGrade() {
+        const scores = {
+            proposal: parseFloat(inputs.proposal.value) || 0,
+            implementasi: parseFloat(inputs.implementasi.value) || 0,
+            laporan: parseFloat(inputs.laporan.value) || 0,
+            presentasi: parseFloat(inputs.presentasi.value) || 0,
+        };
+
+        // Validate all inputs
+        const allValid = [
+            inputs.proposal,
+            inputs.implementasi,
+            inputs.laporan,
+            inputs.presentasi,
+        ].every(validateScore);
+
+        if (!allValid) {
+            inputs.akhir.value = '';
+            letterGradeDisplay.textContent = '';
+            return null;
+        }
+
+        const finalScore = (
+            scores.proposal * weights.proposal +
+            scores.implementasi * weights.implementasi +
+            scores.laporan * weights.laporan +
+            scores.presentasi * weights.presentasi
+        ).toFixed(2);
+
+        inputs.akhir.value = finalScore;
+        const letterGrade = getLetterGrade(parseFloat(finalScore));
+        letterGradeDisplay.textContent = `Huruf: ${letterGrade}`;
+        return finalScore;
+    }
+
+    // Real-time calculation on input change
+    [inputs.proposal, inputs.implementasi, inputs.laporan, inputs.presentasi].forEach(input => {
+        input.addEventListener('input', calculateFinalGrade);
+        input.addEventListener('blur', () => validateScore(input));
+    });
+
+    // Make nilai_akhir read-only
+    inputs.akhir.setAttribute('readonly', true);
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+        submitBtn.disabled = true;
+
+        // Validate all inputs
+        const finalScore = calculateFinalGrade();
+        const komentarValid = inputs.komentar.value.trim().length > 0;
+
+        if (!finalScore || !komentarValid) {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+
+            if (!komentarValid) {
+                inputs.komentar.classList.add('is-invalid');
+                inputs.komentar.parentElement.querySelector('.invalid-feedback').textContent = 'Komentar wajib diisi.';
+            }
+
+            showAlert('danger', 'Harap lengkapi semua field dengan benar.');
+            return;
+        }
+
+        // Send form data to server
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+
+            if (data.success) {
+                showAlert('success', 'Penilaian berhasil disimpan!');
+                setTimeout(() => {
+                    window.location.href = "{% url 'dosen:dashboard' %}";
+                }, 2000);
+            } else {
+                showAlert('danger', data.message || 'Terjadi kesalahan saat menyimpan penilaian.');
+            }
+        })
+        .catch(error => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            showAlert('danger', 'Terjadi kesalahan: ' + error.message);
+        });
+    });
+
+    // Show alert
+    function showAlert(type, message) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alert);
+
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 200);
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}

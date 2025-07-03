@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - STT Cipasung</title>
+    <link rel="icon" type="image/png" href="static/img/logokampus.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #0056b3;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --accent: #ffc107;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Navbar */
+        .navbar {
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            background-color: var(--primary) !important;
+            padding: 8px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand img {
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled .navbar-brand img {
+            transform: scale(0.9);
+        }
+        
+        .nav-link {
+            position: relative;
+            margin: 0 10px;
+            font-weight: 500;
+            
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+            color: #0056b3;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            background: url('/static/img/bground.jpg') no-repeat center center;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: rgb(255, 255, 255);
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 51, 102, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+        
+        .hero-content h1 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Efek Ketikan */
+        .typing-text {
+            min-height: 40px;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+        
+        .typing-text::after {
+            content: "|";
+            animation: blink 0.7s infinite;
+        }
+        
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-outline-light {
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline-light:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Program Studi Section */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+        
+        .section-title h2 {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 3px;
+            background-color: var(--accent);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .program-card {
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            height: 100%;
+        }
+        
+        .program-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .program-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .program-card-body {
+            padding: 20px;
+        }
+        
+        .program-card-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .program-card-body p {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .program-card .btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 60px 0;
+        }
+        
+        .stats-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stats-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .stats-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .stats-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        /* Berita & Acara */
+        .news-card {
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .news-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .news-card-body {
+            padding: 20px;
+        }
+        
+        .news-date {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .news-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .news-excerpt {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        /* Testimonial */
+        .testimonial-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            margin-top: 40px;
+            height: calc(100% - 40px);
+        }
+        
+        .testimonial-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: absolute;
+            top: -40px;
+            left: 30px;
+            border: 5px solid white;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            color: #555;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-name {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .testimonial-title {
+            font-size: 14px;
+            color: #777;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/static/img/bground.jpg') no-repeat center center;
+            background-size: cover;
+            padding: 100px 0;
+            color: white;
+            text-align: center;
+        }
+        
+        .cta-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .cta-text {
+            max-width: 700px;
+            margin: 0 auto;
+            margin-bottom: 30px;
+        }
+        
+        /* Fasilitas */
+        .facility-card {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background-color: white;
+        }
+        
+        .facility-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .facility-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .facility-card:hover .facility-icon {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+        
+        .facility-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 60px 0 15px;
+            position: relative;
+        }
+        
+        .footer-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li {
+            padding: 5px 0;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            text-decoration: none;
+            padding-left: 5px;
+        }
+        
+        .footer-contact {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .footer-contact-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .footer-social {
+            margin-top: 20px;
+        }
+        
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        
+        .footer-social a:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            padding-top: 20px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        /* Scroll to top */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .scroll-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-top:hover {
+            background-color: var(--accent);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .typing-text {
+                font-size: 1rem;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+            
+            .stats-item {
+                margin-bottom: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-transparent">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="/static/img/STT-CIPASUNG-2-e1688823058980.png" alt="Logo STT Cipasung" width="100">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#program-studi">Program Studi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#fasilitas">Fasilitas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#berita">Berita</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+            <h4 class = "display-6" style="font-size: 1.5 rem; line-height: 1.5;">Selamat Datang di</h4>
+            <h1 style="font-size: 5rem; line-height: 1.2;">
+                <i class="fas fa-graduation-cap"></i> SIMONTA
+            </h1>
+            <h3 style="font-size: 2.5 rem; line-height: 1;">Sistem Monitoring Tugas Akhir</h3>
+            <h5 class = "display-6" style="font-size: 1.1rem; line-height: 1.5;">Tunda Nikah Muda, Sarjana di Depan Mata</h5>
+            
+            <p class="typing-text fs-4"></p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'users:login' %}" class="btn btn-outline-light btn-lg">
+                    Mulai Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Program Studi Section -->
+    <section id="program-studi" class="section">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Program Studi Unggulan</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="program-card">
+                        <img src="/static/img/iinformatika.jpeg" alt="Teknik Informatika">
+                        <div class="program-card-body">
+                            <h3 class="program-card-title">Teknik Informatika</h3>
+                            <p>Program studi yang fokus pada pengembangan software, jaringan komputer, dan teknologi informasi masa depan.</p>
+                            <a href="#" class="btn btn-sm btn-primary">Selengkapnya</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="program-card">
+                        <img src="/static/img/industri.jpeg" alt="Sistem Informasi">
+                        <div class="program-card-body">
+                            <h3 class="program-card-title">Teknik Industri</h3>
+                            <p>Program studi yang mempelajari analisis, desain, dan implementasi sistem informasi untuk bisnis dan organisasi.</p>
+                            <a href="#" class="btn btn-sm btn-primary">Selengkapnya</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="program-card">
+                        <img src="/static/img/elektro.jpeg" alt="Teknik Elektro">
+                        <div class="program-card-body">
+                            <h3 class="program-card-title">Teknik Elektro</h3>
+                            <p>Program studi yang mempelajari ilmu elektro, robotika, dan sistem kontrol otomatis untuk industri.</p>
+                            <a href="#" class="btn btn-sm btn-primary">Selengkapnya</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stats-item">
+                        <div class="stats-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stats-number" data-count="5000">873</div>
+                        <div class="stats-text">Mahasiswa</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stats-item">
+                        <div class="stats-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stats-number" data-count="120">40</div>
+                        <div class="stats-text">Dosen</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stats-item">
+                        <div class="stats-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="stats-number" data-count="50">15</div>
+                        <div class="stats-text">Penghargaan</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stats-item">
+                        <div class="stats-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="stats-number" data-count="300">10</div>
+                        <div class="stats-text">Mitra Perusahaan</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fasilitas Section -->
+    <section id="fasilitas" class="section">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Fasilitas Kampus</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="facility-card">
+                        <div class="facility-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3 class="facility-title">Laboratorium Komputer</h3>
+                        <p>Dilengkapi dengan perangkat keras dan lunak terbaru untuk mendukung pembelajaran.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="facility-card">
+                        <div class="facility-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="facility-title">Perpustakaan Digital</h3>
+                        <p>Akses ribuan buku dan jurnal ilmiah dari berbagai penerbit internasional.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="facility-card">
+                        <div class="facility-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h3 class="facility-title">Internet Cepat</h3>
+                        <p>Koneksi internet dengan bandwidth tinggi di seluruh area kampus.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="facility-card">
+                        <div class="facility-icon">
+                            <i class="fas fa-futbol"></i>
+                        </div>
+                        <h3 class="facility-title">Sarana Olahraga</h3>
+                        <p>Lapangan futsal, basket, dan berbagai fasilitas olahraga untuk keseimbangan aktivitas.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-6" data-aos="fade-up" data-aos-delay="500">
+                    <div class="facility-card">
+                        <div class="facility-icon">
+                            <i class="fas fa-coffee"></i>
+                        </div>
+                        <h3 class="facility-title">Kantin & Lounge</h3>
+                        <p>Area nyaman untuk bersantai dan berinteraksi dengan sesama mahasiswa.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-6" data-aos="fade-up" data-aos-delay="600">
+                    <div class="facility-card">
+                        <div class="facility-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="facility-title">Tech Incubator</h3>
+                        <p>Fasilitas untuk pengembangan startup teknologi bagi mahasiswa inovatif.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Berita & Acara Section -->
+    <section id="berita" class="section bg-light">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Berita & Acara Terkini</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="news-card">
+                        <img src="/static/img/workshop.jpeg" alt="Berita 1">
+                        <div class="news-card-body">
+                            <span class="news-date"><i class="far fa-calendar-alt me-2"></i>18 Maret 2025</span>
+                            <h3 class="news-title">Workshop Artificial Intelligence Bersama Pakar Google</h3>
+                            <p class="news-excerpt">STT Cipasung mengadakan workshop AI dengan menghadirkan pakar dari Google untuk berbagi pengetahuan terkini.</p>
+                            <a href="#" class="btn btn-sm btn-primary">Baca Selengkapnya</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="news-card">
+                        <img src="/static/img/hackhaton.jpeg" alt="Berita 2">
+                        <div class="news-card-body">
+                            <span class="news-date"><i class="far fa-calendar-alt me-2"></i>15 Maret 2025</span>
+                            <h3 class="news-title">Mahasiswa STT Cipasung Raih Juara Hackathon Nasional</h3>
+                            <p class="news-excerpt">Tim mahasiswa Teknik Informatika berhasil meraih juara pertama dalam kompetisi pemrograman tingkat nasional.</p>
+                            <a href="#" class="btn btn-sm btn-primary">Baca Selengkapnya</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="news-card">
+                        <img src="/static/img/pmb.jpeg" alt="Berita 3">
+                        <div class="news-card-body">
+                            <span class="news-date"><i class="far fa-calendar-alt me-2"></i>10 Maret 2025</span>
+                            <h3 class="news-title">Penerimaan Mahasiswa Baru Tahun Akademik 2025/2026</h3>
+                            <p class="news-excerpt">STT Cipasung membuka pendaftaran mahasiswa baru untuk tahun akademik 2025/2026 dengan berbagai program beasiswa.</p>
+                            <a href="#" class="btn btn-sm btn-primary">Baca Selengkapnya</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4" data-aos="fade-up">
+                <a href="#" class="btn btn-primary">Lihat Semua Berita</a>
+            </div>
+        </div>
+    </section>
+
+   <!-- Testimonial Section -->
+<section class="testimonial-section">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>Testimoni Alumni</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="testimonial-card">
+                    <img src="/static/img/1750301805273.jpg" alt="Alumni 1" class="testimonial-img">
+                    <p class="testimonial-text">"Pendidikan di STT Cipasung memberikan saya fondasi yang kuat untuk berkarir di bidang teknologi. Dosen-dosen yang berkualitas dan kurikulum yang relevan dengan industri sangat membantu karir saya."</p>
+                    <div class="testimonial-name">Rendi Fauzi</div>
+                    <div class="testimonial-title">Software Engineer at Google</div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="testimonial-card">
+                    <img src="/static/img/ijah.jpeg" alt="Alumni 2" class="testimonial-img">
+                    <p class="testimonial-text">"STT Cipasung tidak hanya mengajarkan saya tentang teknologi, tetapi juga membentuk karakter dan sikap profesional yang sangat diperlukan di dunia kerja. Saya sangat berterima kasih atas pengalaman belajar yang luar biasa."</p>
+                    <div class="testimonial-name">Nurfayzah</div>
+                    <div class="testimonial-title">System Analyst at Tokopedia</div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="testimonial-card">
+                    <img src="/static/img/bisri.jpeg" alt="Alumni 3" class="testimonial-img">
+                    <p class="testimonial-text">"Saya sangat puas dengan pengalaman belajar di STT Cipasung. Fasilitas yang lengkap, dosen yang profesional, dan lingkungan yang nyaman membuat saya merasa betah dan termotivasi untuk belajar."</p>
+                    <div class="testimonial-name">Muhammad Bisri Musthafa</div>
+                    <div class="testimonial-title">IT Consultant at Accenture</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>Daftar Sekarang!</h2>
+        </div>
+        <p class="cta-text">Jangan ragu untuk mendaftar di STT Cipasung. Kami menawarkan program studi yang berkualitas, fasilitas yang lengkap, dan lingkungan yang nyaman untuk belajar.</p>
+        <div class="d-flex justify-content-center">
+            <a href="#" class="btn btn-primary btn-lg">Daftar Sekarang</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer id="tentang" class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="footer-title">Tentang Kami</div>
+                <p>STT Cipasung adalah sekolah tinggi teknologi yang berlokasi di Cipasung, Jawa Barat. Kami menawarkan program studi yang berkualitas dan fasilitas yang lengkap untuk mendukung proses belajar.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="footer-title">Link Terkait</div>
+                <ul class="footer-links">
+                    <li><a href="#">Program Studi</a></li>
+                    <li><a href="#">Fasilitas</a></li>
+                    <li><a href="#">Berita</a></li>
+                    <li><a href="#">Tentang</a></li>
+                    <li><a href="#">Kontak</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <div class="footer-title">Kontak Kami</div>
+                <p>Alamat: Jl. Cipasung No. 123, Cipasung, Jawa Barat</p>
+                <p>Telepon: (0265) 123456</p>
+                <p>Email: [info@sttcipasung.ac.id](mailto:info@sttcipasung.ac.id)</p>
+            </div>
+        </div>
+    </div>
+    <div class="copyright">
+        <p>&copy; 2023 STT Cipasung. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- Scroll to top -->
+<div class="scroll-top">
+    <i class="fas fa-chevron-up"></i>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    AOS.init();
+</script>
