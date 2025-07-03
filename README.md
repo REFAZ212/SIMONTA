@@ -38,7 +38,7 @@ Git
 bash
 Copy
 Edit
-git clone https://github.com/username/simonta.git
+git clone https://github.com/REFAZ212/SIMONTA.git
 cd simonta
 3. Buat Virtual Environment (Opsional tapi direkomendasikan)
 bash
